@@ -1,0 +1,6910 @@
+openapi: 3.0.0
+info:
+  title: OpenPrise Platform
+  description: Platform to handle various tasks, Openprise helps companies accelerate their funnel flow and drive efficient revenue growth.The Openprise Data Orchestration Platform solves “the garbage-in/garbage-out problem.
+  version: 1.0.0
+# servers:
+#   - url: http://localhost:8080/daass
+tags:
+  - name: Tenant
+    
+  - name: User
+    
+  - name: Role
+    
+  - name: Organization
+    
+  - name: Authentication
+   
+  - name: Credential
+   
+  - name: Datasource
+   
+  - name: Catalog
+    
+  - name: Datatarget
+   
+  - name: Job
+   
+  - name: Task
+    
+  - name: Bot
+    
+  - name: Helplink
+    
+  - name: Appfactory
+    
+    
+    
+    
+paths:
+
+  
+  # /tenant/register:
+    
+
+  /api/group/listGroups:
+    get:
+      tags:
+        - Show Credentials
+      summary: Retrieve a list of groups
+      responses:
+        '200':
+          description: List of groups retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupListResponse'
+                
+          # description: List of groups retrieved successfully
+  
+
+  /api/oauth2/isValidAuthentication:
+    get:
+      tags:
+        - Credential
+      summary: Check if the authentication is valid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+          
+  /dataPipelines:
+    get:
+      tags:
+        - Job
+      summary: Get List of Jobs
+      description: List of jobs and their information
+      operationId: dataPipelines
+      parameters:
+        - name: Cookie
+          in: header
+          description: cookies
+          required: true
+          schema:
+            type: string
+            default: 'JSESSIONID=A26FAC4CF06E9D4ABF984F4BD20EE4F0'
+        - name: Op-Xsrf-Token
+          in: header
+          description: Op-Xsrf-Token
+          required: true
+          schema:
+            type: string
+            default: 'd377f7734b2aae178a64974eee9b6d3d'
+        
+        - name: page
+          in: query
+          description: the page number of data being requested
+          required: false
+          explode: true
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: the number of items or records to be displayed per page
+          required: false
+          explode: true
+          schema:
+            type: integer
+            default: 9
+        - name: summary
+          in: query
+          description: instruct the server to include a summary or condensed version of the    data in the response
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            default: true
+        - name: view
+          in: query
+          description: control the presentation style or layout of the data
+          required: false
+          explode: true
+          schema:
+            type: string
+            default: 'collapse'
+        - name: user
+          in: query
+          description: current user id
+          required: false
+          explode: true
+          schema:
+            type: integer
+            default: 3
+        - name: ignorePreferences
+          in: query
+          description: whether the user's preferences or settings should be ignored when fetching the data
+          required: false
+          explode: true
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/jobList'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/jobList'
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden 
+          
+  /dataPipelines/1/isPipelineRunning:
+    post:
+      tags:
+        - Job
+      summary: Get the running status of all jobs
+      description: Running status of all jobs of current user
+      operationId: isPipelineRunning
+      requestBody:
+        description: Send the job ids to know the running status
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/runstatusIDs'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pipelineStatus'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/pipelineStatus'
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden 
+  /dataPipelines/dataPipelineNameAvailStatus:
+    get:
+      tags:
+        - Job
+      summary: If the given job name id available or not
+      description: returns if the name(“test”) is available (if not taken to any other job)                         
+            False - if already used for other job
+            True - if available
+      operationId: dataPipelineNameAvailStatus
+      parameters:
+        - name: name
+          in: query
+          description: the name of the data pipeline being checked for availability
+          required: false
+          explode: true
+          schema:
+            type: string
+            default: 'test'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                default: 'true'
+                           
+            application/xml:
+              schema:
+                type: string
+                default: 'true'
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden 
+          
+  /dataPipelines/:        
+    post:
+      tags:
+        - Job
+      summary: Add Job into Database
+      description: Add Job into Database and then return the job details
+      operationId: addJob
+      requestBody:
+        description: Add a job
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/jobBody'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/jobBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/jobBody'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/addJobResponse'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/addJobResponse'
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden
+          
+  /dataPipelines/{dataPipelineId}:
+    get:
+      tags:
+        - Job
+      summary: Get a particular job
+      description: Get particular job of id=3      
+      operationId: getAJob
+      parameters:
+        - name: dataPipelineId
+          in: path
+          description: the job ID
+          required: true
+          explode: true
+          schema:
+            type: integer
+            default: 3
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/addJobResponse'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/addJobResponse'
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden 
+        '404':
+          description: Job not found
+          
+    put:
+      tags:
+        - Job
+      summary: Edit a particular job
+      description: edit the particular job with jobId = 3
+      operationId: editJob
+      parameters:
+        - name: dataPipelineId
+          in: path
+          description: the job ID
+          required: true
+          explode: true
+          schema:
+            type: integer
+            default: 3
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/editJobBody'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/editJobBody'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/editJobBody'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/editJobResponse'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/editJobResponse'
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden 
+        '404':
+          description: Job not found
+        '409':
+          description: PIPELINE_RUNNING
+          
+  /services:
+    get:
+      tags:
+        - Catalog
+      summary: Get the list of services
+      description: Gets the list of services available
+      operationId: getServices
+      parameters:
+        - name: pageSize
+          in: query
+          description:  the number of items or records to be returned per page
+          required: false
+          explode: true
+          schema:
+            type: integer
+            default: 500
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getServicesResponse'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/getServicesResponse'
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden 
+          
+  /datasources/getAllDataSourcesOptimized:
+    get:
+      tags:
+        - Datasource
+      summary: Get all the Optimized Data Sources
+      description: Gets the list of services available
+      operationId: getAllDataSourcesOptimized
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getAllDataSourcesOptimizedResponse'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/getAllDataSourcesOptimizedResponse'
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden or TenantName Filter Forbidden
+          
+  /getRuleTemplatesWithCategories:
+    get:
+      tags:
+        - Task
+      summary: Get all the Optimized Data Sources
+      description: Gets the list of services available
+      operationId: getRuleTemplatesWithCategories
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getRuleTemplatesWithCategoriesResponse'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/getRuleTemplatesWithCategoriesResponse'
+        '401':
+          description: Unauthorized 
+          
+  /dataPipelines/{dataPipelineId}/getPipelineRules:
+    get:
+      tags:
+        - Job
+      summary: Get the Pipeline Rules
+      description: gives the pipeline rules for that job
+      operationId: getPipelineRules
+      parameters:
+        - name: dataPipelineId
+          in: path
+          description: the job ID
+          required: true
+          explode: true
+          schema:
+            type: integer
+            default: 4
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getPipelineRulesResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/getPipelineRulesResponse'
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden 
+        '404':
+          description: Job not found
+          
+  /datasources/getKeyFields:
+    get:
+      tags:
+        - Datasource
+      summary: Get the key fields of the given datasource
+      description: get the key fields of the given datasource, it is called while adding task
+      operationId: getKeyFields
+      parameters:
+        - name: inputId
+          in: query
+          description: inputId refers to the id of the datasource
+          required: false
+          explode: true
+          schema:
+            type: integer
+            default: 22
+        - name: inputType
+          in: query
+          description: the type of input being referenced
+          required: false
+          explode: true
+          schema:
+            type: string
+            default: 'datasource'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getKeyFieldsResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/getKeyFieldsResponse'
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden 
+  /services/getDataStoreAttributes:
+    post:
+      tags:
+        - Datasource
+      summary: Gets the attributes of the given data source
+      description: Gets all the attributes of the given data source to select what all we want
+      operationId: getDataStoreAttributes
+      parameters:
+        - name: page
+          in: query
+          description: indicates the page number of data being requested
+          required: false
+          explode: true
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: the number of items or records to be returned per page
+          required: false
+          explode: true
+          schema:
+            type: integer
+            default: 5000
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/getDataStoreAttributesBody'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getDataStoreAttributesResponse'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/getDataStoreAttributesResponse'
+        '401':
+          description: Unauthorized 
+        '403':
+          description: Forbidden 
+          
+  /dataPipelines/{dataPipelineId}/runNow :
+    get:
+      tags:
+        - Job
+      summary: Run the job
+      description: Run the job
+      operationId: runNow
+      parameters:
+        - name: dataPipelineId
+          in: path
+          description: the job ID
+          required: true
+          explode: true
+          schema:
+            type: integer
+            default: 3
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/runNowResponse'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/runNowResponse'
+        '401':
+          description: Unauthorized  
+        '403':
+          description: Forbidden 
+        '404':
+          description: Job not found
+        '405': 
+          description: JOB_IS_USED_IN_APP_FACTORY
+        '409': 
+          description: CONFLICT or INPUT_PIPELINE_RUNNING
+
+  /dataPipelines/{dataPipelineId}/getPipelineRunningStatus :
+    get:
+      tags:
+        - Job
+      summary: Get the PipeLine Running Status
+      description: Get the PipeLine Running Status
+      operationId: getPipelineRunningStatus
+      parameters:
+        - name: dataPipelineId
+          in: path
+          description: the job ID
+          required: true
+          explode: true
+          schema:
+            type: integer
+            default: 3
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+                example: {}
+            application/xml:
+              schema:
+                type: array
+                items: {}
+                example: {}
+        '401':
+          description: Unauthorized  
+        '403':
+          description: Forbidden 
+        '404':
+          description: Job not found
+        '500': 
+          description: Missing required attribute - pipelineId
+          
+  /dataPipelines/{dataPipelineId}/purgePipelineData :
+    get:
+      tags:
+        - Job
+      summary: To purge the job
+      description:  purge the job whose jobId is 3
+      operationId: purgePipelineData
+      parameters:
+        - name: dataPipelineId
+          in: path
+          description: the job ID
+          required: true
+          explode: true
+          schema:
+            type: integer
+            default: 3
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/runNowResponse'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/runNowResponse'
+        '401':
+          description: Unauthorized  
+        '403':
+          description: Forbidden 
+        '404':
+          description: Job not found
+        '409': 
+          description: PIPELINE_CURRENTLY_RUNNING or DEPENDENT_PIPELINE_RUNNING or PIPELINE_PURGE_IN_PROGRESS
+
+  /daass/getLoginPageDetails:
+    get:
+      summary: Get login page details
+      tags:
+        - Authentication
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isWhiteLabelTenant:
+                    type: boolean
+                    example: false
+        'default':
+          description: Error response
+
+  /datasources/{dataSourceId}/runNow:
+    get:
+      summary: Run a data source now
+      tags:
+        - Datasource
+      parameters:
+        - in: path
+          name: dataSourceId
+          required: true
+          description: ID of the data source to run
+          schema:
+            type: integer
+            example: 22
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunNowResponse'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Data source Not Found
+        '403':
+          description: Forbidden
+        '409':
+          description: Insufficient Service Quota
+
+  /datasources/getDsImportStatus:
+    post:
+      summary: Get import status of data sources      
+      tags:
+        - Datasource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetDsImportStatusRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDsImportStatusResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+          
+        '409':
+          description: This data source is currently importing and changes cannot be saved. Please stop import and ensure the import process is stopped before saving the changes.
+        '400':
+          description: addAttributes Failed
+
+  /datasources/getDsSize:
+    post:
+      summary: Get size of a data source
+      tags:
+        - Datasource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dsId:
+                  type: array
+                  items:
+                    type: integer
+                  description: Array of data source IDs
+                  example: [70685]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataSourceSizeResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden 
+        '404':
+          description: Data source not found
+  
+
+  /datasources/{dataSourceId}/checkDependentJobsBeforePurge:
+    get:
+      summary: Check dependent jobs before purging a data source
+      tags:
+        - Datasource
+      parameters:
+        - in: path
+          name: dataSourceId
+          required: true
+          description: ID of the data source to check dependent jobs for
+          schema:
+            type: integer
+            example: 70685
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code indicating the result of the check
+                    example: 200
+                  message:
+                    type: string
+                    description: Message describing the result of the check
+                    example: NO_DEPENDENT_PIPELINE_RUNNING
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden or Can not delete tasks output data sources
+        '404':
+          description: Data source not found
+        '409':
+          description: Dependent pipeline running
+
+
+  /datasources/{dataSourceId}/purgeData:
+    post:
+      summary: Purge data of a specific data source
+      tags:
+        - Datasource
+      parameters:
+        - in: path
+          name: dataSourceId
+          required: true
+          description: ID of the data source to purge
+          schema:
+            type: integer
+            example: 70685
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: Status code indicating the result of the purge operation
+                    example: 200
+                  message:
+                    type: string
+                    description: Message describing the result of the purge operation
+                    example: SUCCESS
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden or Can not delete tasks output data sources
+        '404':
+          description: Missing or not a valid data source
+
+  /datasources/{dataSourceId}/dataSourceAttrs:
+    get:
+      summary: Get attributes of a specific data source
+      tags:
+        - Datasource
+      parameters:
+        - in: path
+          name: dataSourceId
+          required: true
+          description: ID of the data source
+          schema:
+            type: integer
+            example: 70685
+        - in: query
+          name: importAttr
+          required: false
+          description: Flag to include imported attributes
+          schema:
+            type: boolean
+            example: true
+        - in: query
+          name: pageSize
+          required: false
+          description: Number of attributes to include per page
+          schema:
+            type: integer
+            example: 5000
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: The ID of the data source
+                      example: 70685
+                    name:
+                      type: string
+                      description: The name of the data source
+                      example: data_test
+                    timeZone:
+                      type: string
+                      description: The timezone of the data source
+                      example: GMT+05:30
+                    timeZoneName:
+                      type: string
+                      description: The timezone name of the data source
+                      example: (GMT+05:30) Sri Jayawardenapura
+                    timestampField:
+                      type: string
+                      description: The timestamp field of the data source
+                      example: opautodate_optype_date
+                    updateTimestampField:
+                      type: string
+                      description: The update timestamp field of the data source
+                      example: null
+                    timestampFieldLabel:
+                      type: string
+                      description: The label of the timestamp field
+                      example: OPAutoDate
+                    updateTimestampFieldLabel:
+                      type: string
+                      description: The label of the update timestamp field
+                      example: null
+                    status:
+                      type: string
+                      description: The status of the data source
+                      example: Active
+        '401':
+          description: Unauthorized
+        '404':
+          description: Data source not found
+
+  /datasources/{dataSourceId}/isAutoSearchAvailable:
+    get:
+      summary: Check if auto search is available for a data source
+      tags:
+        - Datasource
+      parameters:
+        - in: path
+          name: dataSourceId
+          required: true
+          description: ID of the data source
+          schema:
+            type: integer
+            example: 70685
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isAutoSearchAvailable:
+                    type: boolean
+                    example: true
+                  recordCount:
+                    type: integer
+                    example: 5
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Data source not found
+
+
+  /datasources/70685/searchEventData:
+    post:
+      summary: Search event data
+      tags:
+        - Datasource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchEventDataRequest'
+      parameters:
+        - in: query
+          name: page
+          required: true
+          schema:
+            type: integer
+            example: 1
+          description: Page number
+        - in: query
+          name: size
+          required: true
+          schema:
+            type: integer
+            example: 10
+          description: Number of items per page
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+            description: Field to sort by
+        - in: query
+          name: sortOrder
+          schema:
+            type: string
+            description: Sort order (asc or desc)
+            example: asc
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchEventDataResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Data not found
+  
+  
+  
+  
+  
+  
+  
+  
+  /api/datasources/getDsImportStatus:
+    post:
+      summary: Get Data Source Import Status
+      description: Retrieves the import status of data sources.
+      tags:
+        - Datasource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dsId:
+                  type: array
+                  items:
+                    type: integer
+              required:
+                - dsId
+      responses:
+        '200':
+          description: Import status retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/DsImportStatus'
+        '401':
+          description: Unauthorized, the user is not authorized.
+        '403':
+          description: Forbidden, the user does not have sufficient privileges to access the import status.
+        '503':
+          description: Service Unavailable, there's an issue with retrieving the import status.
+
+  
+  /api/oauth2/{oauthId}/files/content:
+    post:
+      summary: Retrieve File Content
+      description: Retrieves the content of a file using OAuth2 authentication.
+      tags:
+        - Datasource
+      parameters:
+        - name: oauthId
+          in: path
+          required: true
+          description: The ID of the OAuth2 authentication.
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filePath:
+                  type: string
+              required:
+                - filePath
+      responses:
+        '200':
+          description: File content retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: string
+                  filePath:
+                    type: string
+        '401':
+          description: Unauthorized, the user is not authorized.
+        '403':
+          description: Forbidden, the OAuth2 credentials are not valid for the user's tenant or if the file path is not provided.
+        '404':
+          description: Not Found, If there is an error in retrieving the file content, such as credential issues or unreachable resources.
+        '499':
+          description: No Access Token Available, - If there is no access token available.
+        '500':
+          description: Internal Server Error - If there is any other unexpected error.
+
+        
+  /api/oauth2/{oauthId}/files:
+    get:
+      summary: Retrieve File Metadata
+      description: Retrieves file metadata for a specified folder using OAuth2 authentication.
+      tags:
+        - Datasource
+      parameters:
+        - in: path
+          name: oauthId
+          schema:
+            type: integer
+          required: true
+          description: The ID of the OAuth2 provider.
+        - in: query
+          name: folder
+          schema:
+            type: string
+          required: true
+          description: The folder for which file metadata is requested.
+      responses:
+        '200':
+          description: File metadata retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    contentType:
+                      type: string
+                    name:
+                      type: string
+                    modifiedTime:
+                      type: string
+                      format: date-time
+                    createdTime:
+                      type: string
+                      format: date-time
+                    parentId:
+                      type: string
+                    url:
+                      type: string
+        '401':
+          description: Unauthorized, the user is not authorized.
+        '403':
+          description: Forbidden, the OAuth2 credentials are not valid for the user's tenant, if the folder is not specified, or if the OAuth2 provider is not available.
+        '404':
+          description: Not Found, there is an error in retrieving the files metadata, such as credential issues or unreachable resources.
+        '499':
+          description: No Access Token, If there is no access token available.
+        '500':
+          description: Internal Server Error, If there is any other unexpected error.
+
+  
+  
+  
+  /api/oauth2/{oauthId}/additionalInputInfo:
+    get:
+      summary: Retrieve Additional Input Metadata
+      description: Retrieves additional input metadata for a specified entity and action using OAuth2 authentication.
+      tags:
+        - Datasource
+      parameters:
+        - in: path
+          name: oauthId
+          schema:
+            type: integer
+          required: true
+          description: The ID of the OAuth2 provider.
+        - in: query
+          name: entity
+          schema:
+            type: string
+          required: true
+          description: The entity for which additional input metadata is requested
+      responses:
+        '200':
+          description: Additional input metadata retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+        '401':
+          description: Unauthorized, If the user is not authorized.
+        '403':
+          description: Forbidden, If the OAuth2 credentials are not valid for the user's tenant or if the OAuth2 provider is not available.
+        '404':
+          description: Not Found, If there is an error in retrieving the additional input metadata, such as credential issues or unreachable resources.
+        '499':
+          description: No Access Token Available, there is no access token available.
+        '500':
+          description: Internal Server Error, there is any other unexpected error.
+     
+  
+  
+  
+  /api/datasources/dataSourceNameAvailStatus:
+    get:
+      summary: Check Data Source Name Availability
+      description: Check if the provided data source name is available.
+      tags:
+        - Datasource
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: true
+          description: The name of the data source to check availability.
+      responses:
+        '200':
+          description: Boolean status indicating whether the data source name is available.
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '401':
+          description: Unauthorized, the user is not authorized.
+
+  
+  
+  
+  /api/datasources/getAllDataSourceSummary:
+    get:
+      summary: Get All Data Source Summary
+      description: Retrieve summary information for all data sources with optional filtering and pagination.
+      tags:
+        - Datasource
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number for pagination.
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of items per page.
+        - in: query
+          name: ignorePreferences
+          schema:
+            type: boolean
+          description: Flag to ignore user preferences.
+        - in: query
+          name: isDataStore
+          schema:
+            type: boolean
+          description: Flag indicating whether the data source is a data store.
+        - in: query
+          name: manualUpdate
+          schema:
+            type: boolean
+          description: Flag indicating whether manual update is allowed for the data source.
+        - in: query
+          name: administrativeDs
+          schema:
+            type: boolean
+          description: Flag indicating whether the data source is an administrative data source.
+      responses:
+        '200':
+          description: Successful response with summary information for data sources.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataSourceSummary'
+
+  
+  /api/dataPipelines:
+    get:
+      summary: Get Data Pipelines
+      description: Retrieve data pipelines with optional filtering and pagination.
+      tags:
+        - Job
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number for pagination.
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of items per page.
+        - in: query
+          name: fetchAll
+          schema:
+            type: boolean
+          description: Flag to fetch all data or not.
+        - in: query
+          name: cols
+          schema:
+            type: string
+          description: Columns to include in the response.
+          required: true
+          style: form
+          explode: true
+      responses:
+        '200':
+          description: Successful response with data pipelines information.
+          content:
+            application/json:
+              schema:
+                $ref: 'components/schemas/datapipelineresponse'
+                
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      
+  
+  
+  /api/oauth2/{oauthId}/fieldInfo:
+    get:
+      summary: Used to fetch metadata related to a provider's fields based on OAuth2 authentication and user input parameters
+      description: Retrieve field information from OAuth provider for a specific entity.
+      tags:
+        - Credential
+      parameters:
+        - in: path
+          name: oauthId
+          schema:
+            type: integer
+          description: ID of the OAuth provider.
+          required: true
+        - in: query
+          name: entity
+          schema:
+            type: string
+          description: Name of the entity to retrieve field information for.
+          required: true
+      responses:
+        '200':
+          description: Successful response with field information.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  description: Field information for the specified entity.
+        '401':
+          description: Unauthorized
+
+  
+  /api/authMethods/authenticatedProvider:
+    get:
+      summary: Get Authenticated Provider
+      description: Retrieve authenticated providers.
+      tags:
+        - Show Credentials
+      parameters:
+        - in: query
+          name: includeInvalid
+          description: Flag to include invalid providers.
+          schema:
+            type: boolean
+          required: true
+      responses:
+        '200':
+          description: Successful response with authenticated providers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataTargetAuthenticatedProviderResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+  
+  /api/datatargets/{dataTargetId}:
+    put:
+      summary: Update Data Target
+      description: Update a specific data target instance.
+      tags:
+        - Datatarget
+      parameters:
+        - in: path
+          name: dataTargetId
+          required: true
+          description: The ID of the data target to update.
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataTargetInput'
+      responses:
+        '200':
+          description: Successful response with updated data target instance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataTargetResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Data Target Not Found
+  
+  /api/datatargets/dataTargetNameAvailStatus:
+    get:
+      summary: Check Data Target Name Availability
+      description: Check the availability status of a data target name within the current tenant.
+      tags:
+        - Datatarget
+      parameters:
+        - in: query
+          name: name
+          required: true
+          description: The name of the data target to check availability for usage.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response with availability status.
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/oauth2/{id}/folders:
+    get:
+      summary: Retrieve folders associated with a specific OAuth2 ID.
+      description: Retrieve folders associated with a specific OAuth2 ID.
+      tags:
+        - Credential
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The ID of the OAuth2 configuration.
+          schema:
+            type: integer
+        - in: query
+          name: allowExport
+          required: true
+          description: Flag indicating whether to allow export.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successful response with folder names.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: OAuth2 Configuration Not Found
+        '499':
+          description: Client Closed Request
+        '500':
+          description: Internal Server Error
+  
+  /api/datatargets/{id}:
+    get:
+      summary: Get Data Target Details
+      description: Retrieve detailed information about a specific data target instance.
+      tags: 
+        - Datatarget
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The ID of the data target instance to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response with data target details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataTargetDetails'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Data Target Not Found
+          
+  /api/securitykeys:
+    get:
+      summary: Get Security Keys
+      description: Retrieve security keys associated with the user's tenant and allowed entities.
+      tags:
+        - Credential
+      responses:
+        '200':
+          description: Successful response with security keys data.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: Unauthorized
+
+  /api/oauth2/authenticatedProvider:
+    get:
+      summary: Get Authenticated OAuth2 Providers
+      description: Retrieve information about authenticated OAuth2 providers.
+      tags:
+        - Show Credentials
+      parameters:
+        - in: query
+          name: includeInvalid
+          schema:
+            type: boolean
+          required: false
+          description: Flag to include invalid providers in the response.
+      responses:
+        '200':
+          description: Successful response with provider data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticatedProviderResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /api/oauthclient/providers:
+    get:
+      summary: Retrieve OAuth Client Providers
+      description: Retrieves OAuth client providers along with their details.
+      tags:
+        - Credential
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthClientProviderList'
+        '401':
+          description: Unauthorized
+      
+  
+  /api/datatargets:
+    post:
+      summary: Create Data Target
+      description: Create a new data target entity.
+      tags:
+        - Datatarget
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataTargetCreateRequest'
+      responses:
+        '200':
+          description: Data target created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataTarget3'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    get:
+      summary: Get Dependencies
+      description: Retrieve dependencies (rules and pipelines) associated with a data target.
+      tags:
+        - Datatarget
+      parameters:
+        - in: query
+          name: dataTargetId
+          schema:
+            type: integer
+          description: ID of the data target to retrieve dependencies for.
+          required: true
+      responses:
+        '200':
+          description: Successful response with dependencies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataTargetCreateResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+
+  
+  /api/users/{userId}:
+    get:
+      summary: Retrieve User Details
+      description: Retrieves details of a specific user.
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+          description: The ID of the user to retrieve.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetailsResponse'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  
+
+  
+  /api/getWhiteLabelDetails:
+    get:
+      summary: Retrieve White Label Details
+      description: Retrieves white label details for the current tenant.
+      tags:
+        - Tenant
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhiteLabelDetails'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tenant/register:
+    post:
+      summary: Register new tenant
+      description: to register new
+      tags:
+        - Tenant
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantCreateRequest'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhiteLabelDetails'
+    
+    
+
+
+  /api/app-factory/getAppFactoryUrl:
+    get:
+      summary: Retrieve App Factory URL
+      description: Retrieves the URL for the app factory.
+      tags:
+        - Appfactory
+      
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppFactoryUrlResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  
+  /api/helpLinks/getHelpLinks:
+    get:
+      summary: Retrieve Help Links
+      description: Retrieves help links based on certain criteria.
+      tags:
+        - Helplink
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelpLinksResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /api/tenantInfo/getTenantFeatures:
+    get:
+      summary: Login to Tenant as Support User and Retrieve Features
+      description: Logs in to a tenant as a support user and retrieves tenant features.
+      tags:
+        - Login to Tenant as a Support User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantFeaturesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/users:
+    post:
+      summary: Create User
+      description: Creates a new user entity.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+    get:
+      summary: Retrieve User Data
+      description: |
+        Retrieves user data with pagination and filtering options.
+      tags: 
+        - User
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination.
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Number of users per page.
+          required: false
+          schema:
+            type: integer
+            default: 500
+        - name: includeSuspended
+          in: query
+          description: Flag to include suspended users.
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: includeBusinessCnts
+          in: query
+          description: Flag to include business contacts.
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDataResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  
+  /api/roles:
+    get:
+      summary: Retrieves Role Data
+      description: Retrieves role data.
+      tags:
+        - Role
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleDataResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  
+  /api/organizations:
+    get:
+      summary: Retrieves Organization Data
+      description: Retrieves organization data with pagination.
+      tags:
+        - Organization
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination.
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Number of organizations per page.
+          required: false
+          schema:
+            type: integer
+            default: 500
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationDataResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  
+
+  
+  /api/configuration:
+    get:
+      summary: retrieves configuration
+      description: |
+        Retrieves configurations for a specific tenant based on provided parameters.
+      tags:
+        - Tenant
+      parameters:
+        - name: type
+          in: query
+          description: Type of configuration to retrieve.
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number for pagination.
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Number of configurations per page.
+          required: false
+          schema:
+            type: integer
+            default: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigurationsResponse'
+  
+  /api/processes:
+    post:
+      summary: creates new Bot process
+      description: here we post new bot processes 
+      tags:
+        - Bot
+      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewSaveProcess'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                 $ref : '#/components/schemas/NewSaveResponse'
+                
+        
+        '500':
+          description: Error in postSave method    
+        
+    get:
+      summary: Retrieve a list of Bot processes
+      description: Responsible for retrieving a list of processes based on user preferences, search query, and other parameters
+      tags:
+        - Bot
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+          description: The page number of the results being requested.
+        - in: query
+          name: pageSize
+          required: false
+          schema:
+            type: integer
+          description: The number of items to be included in each page of results.
+        - in: query
+          name: ignorePreferences
+          required: false
+          schema:
+            type: boolean
+          description: A setting to ignore user preferences or settings.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+                
+  /api/Processes/{id}:
+    get:
+      summary: Retrieve a specific process
+      description: Retrieves details of a specific process identified by its ID.
+      tags:
+        - Bot
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the process to retrieve.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Process'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+ 
+    delete:
+      summary: Delete the Bot process
+      tags:
+        - Bot
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID of the process to delete
+      responses:
+        '200': 
+          description: Success
+        '204':
+          description: No Content found
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '405':
+          description: Method Not Allowed
+        '409':
+          description: Conflict
+
+  
+    
+  /api/tags:
+    get:
+      summary: It check's user requested tag label is available or not
+      description: Retrieves a list of tags.
+      tags:
+        - Bot
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+
+  
+  /api/Processes/{processId}/getRunningStatus:
+    get:
+      summary: Get's running status of Bot process
+      tags:
+        - Bot
+      parameters:
+        - in: path
+          name: processId
+          required: true
+          schema:
+            type: integer
+          description: ID of the process to get running status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isRunning:
+                    type: boolean
+                    example: true
+                  totalObjects:
+                    type: integer
+                    example: 1
+                  processingObject:
+                    type: integer
+                    example: 1
+                  stopProcessing:
+                    type: boolean
+                    example: false
+                  progressPercentage:
+                    type: number
+                    format: float
+                    example: 0.0
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  
+  
+  
+  
+  /api/Processes/{processId}/runNow:
+    get:
+      summary: Runs the specific id Bot, if it exists
+      tags:
+        - Bot
+      parameters:
+        - in: path
+          name: processId
+          required: true
+          schema:
+            type: integer
+          description: ID of the process to run
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: SUCCESS
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: string
+                    example: "entity not found"
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  usageResults:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: "Running the process is not allowed"
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: string
+                    example: "Process is already running"
+        '500':
+          description: Internal Server Error
+
+
+  
+  
+  /api/preferences:
+    get:
+      summary: It's responsible for fetching and returning a paginated list of user preferences
+      tags:
+        - Bot
+      parameters:
+        - in: query
+          name: preference
+          required: true
+          schema:
+            type: string
+          description: Name of the preference to retrieve
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferenceResponse'
+        '401':
+          description: Unauthorized
+  
+  
+  
+
+  /api/Processes/{processId}:
+    put:
+      summary: Update details of a specific process
+      tags:
+        - Bot
+      parameters:
+        - in: path
+          name: processId
+          required: true
+          schema:
+            type: integer
+          description: ID of the process to update
+        - in: header
+          name: Cookie
+          schema:
+            type: string
+          required: true
+          description: Session cookie for authentication
+        - in: header
+          name: Op-Xsrf-Token
+          schema:
+            type: string
+          required: true
+          description: XSRF token for preventing CSRF attacks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProcessRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessDetails'
+        '400':
+          description: Bad Request
+        '403':
+          description: Forbidden
+  
+  
+  /api/Processes/{processId}/updateProcessEntities:
+    put:
+      summary: Update process entities for a BOT
+      tags:
+        - Bot
+      parameters:
+        - in: path
+          name: processId
+          required: true
+          schema:
+            type: integer
+          description: ID of the process
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Bots'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Bots'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "entityName running"
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: string
+                    example: "entity not found"
+    
+  /api/process/workflowNameAvailStatus:
+    get:
+      summary: Check availability of a workflow name
+      tags:
+        - Bot
+      parameters:
+        - in: query
+          name: name
+          required: true
+          schema:
+            type: string
+          description: Name of the workflow to check
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: string
+                    example: "Unauthorized"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: string
+                    example: "Forbidden"
+                    
+
+                
+  /api/datasources:
+    get:
+      summary: Retrieves a list of data sources based on specified parameters
+      tags:
+        - Bot
+      parameters:
+        - in: query
+          name: cols
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+          description: |
+            Comma-separated list of columns to include in the response.
+            Ex: cols=name,allowManualUpdate,status,dataAssessment,dataFormat,dataSourceAdmin,dataProvider,authMethod
+        - in: query
+          name: allDsRequired
+          required: true
+          schema:
+            type: boolean
+          description: Indicates whether all data sources are required.
+        - in: query
+          name: isDataStore
+          required: true
+          schema:
+            type: boolean
+          description: Indicates whether the data is stored.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataSourcesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: string
+                    example: "Unauthorized"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: string
+                    example: "TenantName Filter Forbidden"
+                  message:
+                    type: string
+                    example: "Users can only see data sources if they are a Manager or above"
+  
+      
+    post:
+      summary: Save Data Source
+      description: Saves a data source.
+      tags:
+        - Datasource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataSourceinput'
+      responses:
+        '200':
+          description: Data source saved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataSourceresponse'
+        '401':
+          description: Unauthorized - If the user is not authorized.
+        '403':
+          description: Forbidden - If the user is not allowed to perform the save action.
+        '400':
+          description: Bad Request - If there is a NULL or blank attribute name, or if the creation of the data source fails for any other reason.
+      
+  
+  /api/Processes/{processId}/addEntitiesToProcess:
+    post:
+      summary: Add entities to a process
+      tags:
+        - Bot
+      parameters:
+        - in: path
+          name: processId
+          required: true
+          schema:
+            type: integer
+          description: ID of the process
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProcessEntityRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProcessEntityResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Process is currently running or paused"
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found  
+    
+    
+components:
+
+
+      
+  schemas:
+  
+    
+    
+    
+    
+    
+    
+    
+  
+    GroupListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+        success:
+          type: boolean
+        pageSize:
+          type: integer
+        totalCount:
+          type: integer
+
+    Group:
+      type: object
+      properties:
+        lastUpdated:
+          type: integer
+        isReadOnly:
+          type: boolean
+        dateCreated:
+          type: integer
+        tenantName:
+          type: string
+        displayName:
+          type: string
+        name:
+          type: string
+        entityPermissions:
+          type: object
+          properties:
+            APP:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntityPermission'
+            PROJECT:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntityPermission'
+            CREDENTIAL:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntityPermission'
+        id:
+          type: integer
+        status:
+          type: string
+  
+    EntityPermission:
+      type: object
+      properties:
+        lastUpdated:
+          type: integer
+        dateCreated:
+          type: integer
+        entityName:
+          type: string
+        permissionDisplayName:
+          type: string
+        id:
+          type: integer
+        entityDisplayName:
+          type: string
+        permissionName:
+          type: string
+        status:
+          type: string
+  
+      
+      
+  
+    SearchEventDataRequest:
+      type: object
+      properties:
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Filter'
+      required:
+        - filters
+
+    Filter:
+      type: object
+      properties:
+        field:
+          type: string
+          description: The field to filter on
+          example: "EMPLOYEE_ID"
+        operator:
+          type: string
+          description: The operator to use for filtering
+          example: "excludes"
+        values:
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+                description: The value to exclude.
+                example: "199"
+            example: 
+              - value: "199"
+              - value: "200"
+              - value: "202"
+              - value: "203"
+          description: List of values to filter out
+        groupId:
+          type: integer
+          description: The group ID for the filter
+          example: 0
+        case_sensitive:
+          type: boolean
+          description: Flag to indicate if the filter is case-sensitive
+          example: false
+
+    SearchEventDataResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventData'
+          description: List of event data items
+        aggregations:
+          type: object
+          description: Aggregations for search results
+        total:
+          type: integer
+          description: Total number of items found
+
+    EventData:
+      type: object
+      properties:
+        OPFileNames:
+          type: array
+          items:
+            type: string
+          description: List of file names
+          example: ["test/Copy of test_data.csv"]
+        '@index':
+          type: string
+          description: Index information
+          example: "training_data_test"
+        EMPLOYEE_ID:
+          type: string
+          description: Employee ID
+          example: "201"
+        '@id':
+          type: string
+          description: ID
+          example: "201"
+        EMAIL:
+          type: string
+          description: Email address
+          example: "MHARTSTE"
+        LAST_NAME:
+          type: string
+          description: Last name
+          example: "Hartstein"
+        PHONE_NUMBER:
+          type: string
+          description: Phone number
+          example: "515.123.5555"
+        FIRST_NAME:
+          type: string
+          description: First name
+          example: "Michael"
+        OPAutoDate:
+          type: string
+          format: date-time
+          description: Automatic date
+          example: "2024-03-10T08:40:10.000Z"
+
+
+
+    DataSourceSizeResponse:
+      type: object
+      properties:
+        '70685':
+          $ref: '#/components/schemas/DataSourceSize'
+    DataSourceSize:
+      type: object
+      properties:
+        MB:
+          type: number
+          description: Size of imported data in megabytes (MB)
+          example: 0.05
+        KB:
+          type: number
+          description: Size of imported data in kilobytes (KB)
+          example: 59.92
+        count:
+          type: integer
+          description: Number of items imported
+          example: 6
+        GB:
+          type: number
+          description: Size of imported data in gigabytes (GB)
+          example: 0.0
+
+
+    GetDsImportStatusResponse:
+      type: object
+      properties:
+        '69473':
+          $ref: '#/components/schemas/DataSourceImportStatusNotFound'
+        '70647':
+          $ref: '#/components/schemas/DataSourceImportStatusNotFound'
+        '70646':
+          $ref: '#/components/schemas/DataSourceImportStatusNotFound'
+        '70685':
+          $ref: '#/components/schemas/DataSourceImportStatusRunning'
+    DataSourceImportStatusNotFound:
+      type: object
+      properties:
+        status:
+          type: string
+          description: The status of the data source import process.
+          example: "Not Found"
+        percentageComplete:
+          type: integer
+          description: The percentage of completion of the import process.
+          example: 0
+    DataSourceImportStatusRunning:
+      type: object
+      properties:
+        inQueue:
+          type: boolean
+          description: Indicates if the data source is in the import queue.
+          example: true
+        queue:
+          type: string
+          description: The status of the import queue.
+          example: "processing"
+        percentageComplete:
+          type: integer
+          description: The percentage of completion of the import process.
+          example: 100
+        detail:
+          type: object
+          properties:
+            lastUpdatedDate:
+              type: string
+              description: The date when the import was last updated.
+              example: "2024-04-03T05:43:02+0000"
+        isStopped:
+          type: boolean
+          description: Indicates if the import process has been stopped.
+          example: false
+        abortedBy:
+          type: string
+          nullable: true
+          description: The user who aborted the import process, if any.
+          example: null
+        status:
+          type: string
+          description: The status of the data source import process.
+          example: "Running"
+        progress:
+          type: integer
+          description: The progress of the import process.
+          example: 100
+        count:
+          type: integer
+          description: The number of items imported.
+          example: 6
+        KB:
+          type: number
+          description: The size of imported data in kilobytes (KB).
+          example: 45.49
+        MB:
+          type: number
+          description: The size of imported data in megabytes (MB).
+          example: 0.04
+        GB:
+          type: number
+          description: The size of imported data in gigabytes (GB).
+          example: 0.0
+
+    GetDsImportStatusRequest:
+      type: object
+      properties:
+        dsId:
+          type: array
+          items:
+            type: integer
+          description: List of data source IDs
+          example:
+            [70646, 70685, 70647, 69473]
+
+    
+
+
+    RunNowResponse:
+      type: object
+      properties:
+        done:
+          type: boolean
+          example: true
+        errors:
+          type: boolean
+          example: false
+
+    runNowResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: SUCCESS
+    editJobResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        visibility:
+          type: string
+          example: "User"
+        isRecipe:
+          type: boolean
+          example: false
+        usedInAppFactory:
+          type: boolean
+          example: false
+        isAutoPurge:
+          type: boolean
+          example: true
+        dateCreated:
+          type: string
+          format: date-time
+          example: "2024-03-25T08:10:04Z"
+        frequencyUnit:
+          type: string
+          example: "minutes"
+        ruleOrder:
+          type: array
+          items:
+            type: object
+            properties:
+              ruleId:
+                type: integer
+                example: 6
+              order:
+                type: integer
+                example: 1
+          example:
+            - ruleId: 6
+              order: 1
+        runMode:
+          type: string
+          example: "Production"
+        lastRun:
+          type: string
+          nullable: true
+          example: null
+        nextRun:
+          type: integer
+          example: 1711354203883
+        lastUpdated:
+          type: string
+          format: date-time
+          example: "2024-03-25T11:31:20Z"
+        frequencyType:
+          type: string
+          example: "every"
+        pauseWaitingOn:
+          type: string
+          nullable: true
+          example: null
+        tenantName:
+          type: string
+          example: "openprise"
+        datasource:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 22
+            name:
+              type: string
+              example: "test"
+          example:
+            id: 22
+            name: "test"
+        rules:
+          type: array
+          items:
+            type: object
+            properties:
+              inputData:
+                type: array
+                items:
+                  type: string
+                  example: "test"
+              outputData:
+                type: array
+                items:
+                  type: string
+                  example: "Job Output - test3243432"
+              brokenStatusDetails:
+                type: array
+                items: {}
+                example: []
+              id:
+                type: integer
+                example: 6
+              name:
+                type: string
+                example: "test"
+              templateId:
+                type: integer
+                example: 29
+              skipExecution:
+                type: boolean
+                example: false
+              service:
+                nullable: true
+                type: string
+                example: null
+              datasource:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 22
+                  name:
+                    type: string
+                    example: "test"
+                  authMethodId:
+                    nullable: true
+                    type: integer
+                    example: null
+                  dataProvider:
+                    type: integer
+                    example: 4
+              outputStore:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 26
+                  name:
+                    type: string
+                    example: "Job Output - test3243432"
+              target:
+                nullable: true
+                type: string
+                example: null
+              residualStore:
+                nullable: true
+                type: string
+                example: null
+              purgeOutputBeforeRun:
+                type: boolean
+                example: false
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 83
+        service:
+          nullable: true
+          type: string
+          example: null
+        name:
+          type: string
+          example: "test3243432"
+        type:
+          type: string
+          example: "DataProcessing"
+        frequency:
+          type: string
+          example: "15"
+        status:
+          type: string
+          example: "Disabled"
+        scheduleJobName:
+          type: string
+          example: "Pipeline 4 Schedule Job"
+        apiEnabled:
+          type: boolean
+          example: false
+        description:
+          nullable: true
+          type: string
+          example: null
+        ignoreUnusedJobAttributesWarning:
+          type: boolean
+          example: false
+        ownerId:
+          type: integer
+          example: 3
+        runningRuleId:
+          nullable: true
+          type: integer
+          example: null
+        scheduleStatus:
+          type: string
+          example: "Disabled"
+        admins:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 3
+        isAdmin:
+          type: boolean
+          example: true
+        brokenStatus:
+          type: boolean
+          example: false
+        inputDetails:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 22
+            type:
+              type: string
+              example: "DataSource"
+        inputData:
+          type: array
+          items:
+            type: string
+            example: "test"
+        outputData:
+          type: array
+          items:
+            type: string
+            example: "Job Output - test3243432"
+        inputProviders:
+          type: array
+          items:
+            type: object
+            properties:
+              providerName:
+                type: string
+                example: "gdrivesheets"
+              type:
+                type: string
+                example: "externalDatasource"
+              iconPath:
+                type: string
+                example: "/daass/assets/googlesheets.png"
+        targetProviders:
+          type: array
+          items:
+            type: object
+            properties:
+              providerName:
+                type: string
+                example: "openprise"
+              type:
+                type: string
+                example: "internalOutputStore"
+              iconPath:
+                type: string
+                example: ""
+        serviceProviders:
+          type: object
+          example: []
+        tags:
+          type: object
+          example: []
+        workFlowDetails:
+          type: object
+          example: []
+        attributeSummary:
+          type: array
+          items:
+            type: object
+            properties:
+              rule:
+                nullable: true
+                type: object
+                example: null
+              isKeyField:
+                type: boolean
+                example: false
+              keyFieldType:
+                nullable: true
+                type: string
+                example: null
+              status:
+                type: string
+                example: "Active"
+              sourceType:
+                type: string
+                example: "Manual"
+              displayName:
+                type: string
+                example: "EMAIL"
+              originFieldName:
+                type: string
+                example: "EMAIL"
+              unit:
+                nullable: true
+                type: string
+                example: null
+              type:
+                type: string
+                example: "string"
+              esType:
+                nullable: true
+                type: string
+                example: null
+              isMasked:
+                type: boolean
+                example: false
+              isMultiValued:
+                type: boolean
+                example: false
+              name:
+                type: string
+                example: "email_optype_string"
+              class:
+                type: string
+                example: "DataPipelineAttribute"
+              id:
+                type: integer
+                example: 83
+
+        
+        
+    editJobBody:
+      type: object
+      properties:
+        outputData:
+          type: array
+          items:
+            type: string
+          example:
+            - "Job Output - test3243432"
+        description:
+          type: object
+          example: []
+        targetProviders:
+          type: array
+          items:
+            type: object
+            properties:
+              providerName:
+                type: string
+                example: "openprise"
+              type:
+                type: string
+                example: "internalOutputStore"
+              iconPath:
+                type: string
+                example: ""
+        type:
+          type: string
+          example: "DataProcessing"
+        workFlowDetails:
+          type: array
+          items: {}
+          example: []
+        tenantName:
+          type: string
+          example: "openprise"
+        ruleOrder:
+          type: string
+          example: "[{\"ruleId\":6,\"order\":1}]"
+        scheduleStatus:
+          type: string
+          example: "Disabled"
+        id:
+          type: integer
+          example: 4
+        isAutoPurge:
+          type: boolean
+          example: true
+        usedInAppFactory:
+          type: boolean
+          example: false
+        apiEnabled:
+          type: boolean
+          example: false
+        inputProviders:
+          type: array
+          items:
+            type: object
+            properties:
+              providerName:
+                type: string
+                example: "gdrivesheets"
+              type:
+                type: string
+                example: "externalDatasource"
+              iconPath:
+                type: string
+                example: "/daass/assets/googlesheets.png"
+        inputData:
+          type: array
+          items:
+            type: string
+          example:
+            - "test"
+        brokenStatus:
+          type: boolean
+          example: false
+        isAdmin:
+          type: boolean
+          example: true
+        runMode:
+          type: string
+          example: "Production"
+        tags:
+          type: array
+          items: {}
+          example: []
+        datasource:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 22
+            name:
+              type: string
+              example: "test"
+        service:
+          type: string
+          example: null
+        name:
+          type: string
+          example: "test3243432"
+        inputDetails:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 22
+            type:
+              type: string
+              example: "DataSource"
+        serviceProviders:
+          type: array
+          items: {}
+        admins:
+          type: array
+          items:
+            type: object
+            properties:
+              accountLocked:
+                type: boolean
+                example: false
+              address1:
+                type: string
+                example: null
+              address2:
+                type: string
+                example: null
+              city:
+                type: string
+                example: null
+              country:
+                type: string
+                example: null
+              deleted:
+                type: boolean
+                example: false
+              firstName:
+                type: string
+                example: "Support"
+              fullName:
+                type: string
+                example: "Support Admin"
+              state:
+                type: string
+                example: null
+              id:
+                type: integer
+                example: 3
+              lastLoginTime:
+                type: string
+                format: date-time
+                example: "2024-03-25T10:21:00Z"
+              lastName:
+                type: string
+                example: "Admin"
+              notes:
+                type: object
+                example: []
+              passwordExpired:
+                type: boolean
+                example: false
+              phone1:
+                type: object
+                example: []
+              phone2:
+                type: object
+                example: []
+              role:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 4
+                  authority:
+                    type: string
+                    example: "ROLE_SUPPORT_ADMIN"
+                  order:
+                    type: integer
+                    example: 500
+              status:
+                type: string
+                example: "Active"
+              tenantName:
+                type: string
+                example: "openprise"
+              username:
+                type: string
+                example: "op.support+openprise@openprisetech.com"
+              zip:
+                type: object
+                example: []
+              dismissAnnouncement:
+                type: boolean
+                example: false
+              dismissTenantWelcome:
+                type: boolean
+                example: false
+              dismissUserWelcome:
+                type: boolean
+                example: false
+              expiresOn:
+                type: object
+                example: []
+              accountExpired:
+                type: boolean
+                example: false
+              displayName:
+                type: string
+                example: "Support Admin (op.support+openprise@openprisetech.com)"
+              organization:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "Openprise"
+              avatar:
+                type: object
+                example: []
+              apiEnabled:
+                type: boolean
+                example: false
+              initial:
+                type: string
+                example: "SA"
+        status:
+          type: string
+          example: "Disabled"
+        tagData:
+          type: object
+          example: []
+        runLabel:
+          type: string
+          example: "Run"
+
+    getDataStoreAttributesResponse:
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/attribute'
+        ds:
+          $ref: '#/components/schemas/dataStore'
+    
+    attribute:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 136
+        name:
+          type: string
+          example: "api_key"
+        dataSourceVal:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 8
+        unit:
+          type: string
+          example: null
+        type:
+          type: string
+          example: "string"
+        esType:
+          type: string
+          example: null
+        isMasked:
+          type: boolean
+          example: false
+        originFieldName:
+          type: string
+          example: "Api Key"
+        fieldOrder:
+          type: integer
+          example: 16
+        isRequired:
+          type: boolean
+          example: false
+        isAutoTimestamp:
+          type: boolean
+          example: false
+        importAttr:
+          type: boolean
+          example: true
+        isMultiValued:
+          type: boolean
+          example: false
+    
+    dataStore:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 8
+        name:
+          type: string
+          example: "Custom Rule Transaction"
+        isDataStore:
+          type: boolean
+          example: false
+        allowManualUpdate:
+          type: boolean
+          example: true
+        timestampField:
+          type: string
+          example: "last_updated"
+        keyField:
+          type: string
+          example: null
+        dpPath:
+          type: string
+          example: null
+        type:
+          type: string
+          example: "DataSource"
+        indexAndTemplatePrefix:
+          type: string
+          example: "openprise_custom_rule_transaction"
+        mappingName:
+          type: string
+          example: "Custom_Rule_Transaction"
+        esClusterName:
+          type: string
+          example: "defaultCluster"
+        softDeleteField:
+          type: string
+          example: null
+        updateTimestampField:
+          type: string
+          example: null
+          
+    getDataStoreAttributesBody:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 8
+        type:
+          type: string
+          example: "DataSource"
+        name:
+          type: string
+          example: "Custom Rule Transaction"
+        importAttr:
+          type: boolean
+          example: true
+    
+    getKeyFieldsResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          field:
+            type: string
+            example: "EMPLOYEE_ID"
+          type:
+            type: string
+            example: "KeyField"
+          id:
+            type: integer
+            example: 345
+      example:
+        - field: "EMPLOYEE_ID"
+          type: "KeyField"
+          id: 345
+        - field: "OPAutoDate"
+          type: "PrimaryTimestamp"
+          id: 350
+
+    getPipelineRulesResponse:
+      type: object
+      example: []
+    getRuleTemplatesWithCategoriesResponse:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/category'
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/template'
+    
+    category:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Frequently used"
+        icon:
+          type: string
+          example: "mdi-history"
+        templateNames:
+          type: array
+          items:
+            type: string
+          example: 
+            - "Classification and tagging"
+            - "Export: Add / Update"
+            - "Export: Create manual data source"
+            - "Fill empty attribute"
+            - "Filter records"
+            - "Permute record"
+            - "Infer value"
+        subCategories:
+          type: object
+          example: null
+        resourceType:
+          type: string
+          example: "Category"
+        status:
+          type: string
+          example: "Active"
+    
+    template:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 58
+        name:
+          type: string
+          example: "Acquire leads or contacts"
+        description:
+          type: string
+          example: "This rule acquire lead or contact details."
+        shortDescription:
+          type: string
+          example: "acquireLeadOrContact"
+        type:
+          type: string
+          example: "DataProcessing"
+        apiSupport:
+          type: boolean
+          example: true
+        jsonKey:
+          type: string
+          example: "data_service_rule"
+        ruleVersion:
+          type: integer
+          example: 1
+
+    getAllDataSourcesOptimizedResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 22
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 16
+              name:
+                type: string
+                example: "API Factory Usage History"
+              isDataStore:
+                type: boolean
+                example: false
+              allowManualUpdate:
+                type: boolean
+                example: false
+              timestampField:
+                type: string
+                example: "date"
+              storeType:
+                type: string
+                example: null
+              pipelineName:
+                type: string
+                example: ""
+              order:
+                type: string
+                example: ""
+
+    getServicesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/auditEvent'
+            
+    auditEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Openprise Audit Events"
+        description:
+          type: object
+          example: []
+        status:
+          type: string
+          example: "published"
+        accessType:
+          type: string
+          example: "Public"
+        dataOwnershipAccess:
+          type: string
+          example: "All Data"
+        image:
+          type: object
+          properties:
+            id:
+              nullable: true
+          example:
+            id: null
+        logDataSource:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 4
+        supportInformation:
+          type: string
+          example: null
+        serviceProvider:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+        serviceAdministrator:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+        orgAccess:
+          type: object
+          example: []
+        isPremium:
+          type: boolean
+          example: false
+        schemAttrs:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              
+    addJobResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        visibility:
+          type: string
+          example: "User"
+        isRecipe:
+          type: boolean
+          example: false
+        usedInAppFactory:
+          type: boolean
+          example: false
+        isAutoPurge:
+          type: boolean
+          example: true
+        dateCreated:
+          type: string
+          format: date-time
+          example: "2024-03-25T08:10:03Z"
+        frequencyUnit:
+          type: string
+          example: "minutes"
+        ruleOrder:
+          type: object
+          example: []
+        runMode:
+          type: string
+          example: "Production"
+        lastRun:
+          type: string
+          example: null
+        nextRun:
+          type: integer
+          example: 1711354203883
+        lastUpdated:
+          type: string
+          format: date-time
+          example: "2024-03-25T08:10:03Z"
+        frequencyType:
+          type: string
+          example: "every"
+        pauseWaitingOn:
+          type: string
+          example: null
+        tenantName:
+          type: string
+          example: "openprise"
+        datasource:
+          type: string
+          example: null
+        rules:
+          type: object
+          example: []
+        attributes:
+          type: string
+          example: null
+        service:
+          type: string
+          example: null
+        name:
+          type: string
+          example: "test3243432"
+        type:
+          type: string
+          example: "DataProcessing"
+        frequency:
+          type: string
+          example: "15"
+        status:
+          type: string
+          example: "Disabled"
+        scheduleJobName:
+          type: string
+          example: "Pipeline 4 Schedule Job"
+        apiEnabled:
+          type: boolean
+          example: false
+        description:
+          type: string
+          example: null
+        ignoreUnusedJobAttributesWarning:
+          type: boolean
+          example: false
+        ownerId:
+          type: integer
+          example: 3
+        runningRuleId:
+          type: string
+          example: null
+        scheduleStatus:
+          type: string
+          example: "Disabled"
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/admins'
+        isAdmin:
+          type: boolean
+          example: true
+        brokenStatus:
+          type: boolean
+          example: false
+        inputDetails:
+          type: string
+          example: null
+        inputData:
+          type: object
+          example: []
+        outputData:
+          type: object
+          example: []
+        inputProviders:
+          type: object
+          example: []
+        targetProviders:
+          type: object
+          example: []
+        serviceProviders:
+          type: object
+          example: []
+        tags:
+          type: object
+          example: []
+        workFlowDetails:
+          type: object
+          example: []
+        attributeSummary:
+          type: object
+          example: []
+    jobList:
+      type: object
+      properties:
+        total: 
+          type: integer
+          example: 1
+        data:
+         $ref: '#/components/schemas/job'
+      
+    job:
+      type: object
+      properties:
+        outputData:
+          type: object
+          example: []
+        description:
+          type: string
+          example: 'test'
+        targetProviders:
+          type: object
+          example: []
+        type:
+          type: string
+          example: 'dataProcessing'
+        workFlowDetails:
+          type: object
+          example: []
+        tenantName:
+          type: string
+          example: 'openprise'
+        ruleOrder:
+          type: object
+          example: []
+        scheduleStatus:
+          type: string
+          example: 'Disabled'
+        id:
+          type: integer
+          example: 1
+        isAutoPurge:
+          type: boolean
+          example: true
+        usedInAppFactory:
+          type: boolean
+          example: false
+        apiEnabled:
+          type: boolean
+          example: false
+        inputProviders:
+          type: object
+          example: []
+        inputData:
+          type: object
+          example: []
+        brokenStatus:
+          type: boolean
+          example: false
+        isAdmin:
+          type: boolean
+          example: true
+        runMode:
+          type: string
+          example: 'Production'
+        tags:
+          type: object
+          example: []
+        datasource:
+          type: string
+          example: null
+        service:
+          type: string
+          example: null
+        name:
+          type: string
+          example: 'test'
+        inputDetails:
+          type: string
+          example: null
+        serviceProviders:
+          type: object
+          example: []
+        admins:
+          $ref: '#/components/schemas/admins'
+        status:
+          type: string
+          example: "Disabled"
+        
+      xml:
+        name: job
+    admins:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 3
+      xml:
+        name: admins
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        petId:
+          type: integer
+          format: int64
+          example: 198772
+        quantity:
+          type: integer
+          format: int32
+          example: 7
+        shipDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Order Status
+          example: approved
+          enum:
+            - placed
+            - approved
+            - delivered
+        complete:
+          type: boolean
+      xml:
+        name: order
+    runstatusIDs:
+      properties:
+        id:
+            type: array
+            description: Job IDs
+            example: [1,2,3]
+    pipelineStatus:
+      type: object
+      properties:
+        "1": 
+          $ref: '#/components/schemas/pipelineStatus1'
+        "2": 
+          $ref: '#/components/schemas/pipelineStatus1'
+        "3": 
+          $ref: '#/components/schemas/pipelineStatus1'
+    pipelineStatus1:
+      type: object
+      properties:
+        isPipelineRunning:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+          example: 200
+        status:
+          type: string
+          example: "ok"
+    jobBody:
+      type: object
+      properties:
+        isAdmin:
+          type: boolean
+          example: true
+        isAutoPurge:
+          type: boolean
+          example: true
+        Admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/admins'
+        Name:
+          type: string
+          example: "test3243432"
+        Owner:
+          $ref: '#/components/schemas/admins'
+        runMode:
+          type: string
+          example: "Production"
+        status:
+          type: string
+          example: "Disabled"
+        nameAvailStatus:
+          type: boolean
+          example: true
+        type:
+          type: string
+          example: "DataProcessing"
+
+    
+  
+  
+  
+  
+  
+  
+  
+  
+
+    DsImportStatus:
+      type: object
+      properties:
+        status:
+          type: string
+        percentageComplete:
+          type: integer
+  
+    
+    DataSourceinput:
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataSourceAttribute'
+        columnLine:
+          type: integer
+        daEmailReport:
+          type: boolean
+        daReportFrequency:
+          type: string
+        dataRowNum:
+          type: integer
+        dataSourceAdmin:
+          type: integer
+        daysToArchive:
+          type: integer
+        description:
+          type: string
+        importAlert:
+          type: string
+        importOptions:
+          type: string
+        isAdmin:
+          type: boolean
+        isOpenDatasource:
+          type: boolean
+        name:
+          type: string
+        scheduleStatus:
+          type: string
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataSourceUser'
+        dataFormat:
+          type: string
+        timeZone:
+          type: string
+        timeZoneName:
+          type: string
+        dpPath:
+          type: string
+        importFieldValues:
+          type: string
+        dataProvider:
+          type: integer
+        authMethod:
+          type: string
+        dataLicenseType:
+          type: string
+        providerCategory:
+          type: string
+        warningMessage:
+          type: string
+        sourceSchemaChangeAlert:
+          type: string
+        fileSeparator:
+          type: string
+        primaryDateSource:
+          type: string
+        timestampFieldLabel:
+          type: string
+        schemaInformation:
+          type: string
+        purgeAfterPipelineRun:
+          type: string
+    DataSourceresponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        isDataStore:
+          type: boolean
+        storeType:
+          type: string
+        dateCreated:
+          type: string
+          format: date-time
+        importInfo:
+          type: string
+        mappingName:
+          type: string
+        authMethod:
+          type: string
+        softDeleteField:
+          type: string
+        optinCommunity:
+          type: string
+        renameAfterProcess:
+          type: boolean
+        esClusterName:
+          type: string
+        daysToArchive:
+          type: integer
+        dataLicenseType:
+          type: string
+        filterQuery:
+          type: string
+        dpPath:
+          type: string
+        dataRowNum:
+          type: integer
+        dpUnit:
+          type: string
+        dataSourceAdmin:
+          type: integer
+        latestUpdateDateMarker:
+          type: string
+          format: date-time
+        importFieldValues:
+          type: string
+        securityKey:
+          type: string
+        name:
+          type: string
+        isOpenDatasource:
+          type: boolean
+        dpFrequency:
+          type: string
+        dataAssessment:
+          type: string
+        timeZone:
+          type: string
+        schemaInformation:
+          type: string
+        importOptions:
+          type: string
+        timestampField:
+          type: string
+        modifyDateSource:
+          type: string
+        dpCheckFrequency:
+          type: string
+        deleteType:
+          type: string
+        visibility:
+          type: string
+        dataFormat:
+          type: string
+        scheduleStatus:
+          type: string
+        decryptFiles:
+          type: string
+        dataProvider:
+          type: integer
+        lastUpdated:
+          type: string
+          format: date-time
+        primaryDateSource:
+          type: string
+        usingDynamicTemplate:
+          type: boolean
+        statusDeleted:
+          type: boolean
+        parentDataSource:
+          type: string
+        allowManualUpdate:
+          type: boolean
+        updateInfo:
+          type: string
+        tenantName:
+          type: string
+        skipFooterNum:
+          type: integer
+        additionalFields:
+          type: string
+        updateTimestampField:
+          type: string
+        importAlert:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+        indexAndTemplatePrefix:
+          type: string
+        columnLine:
+          type: integer
+        isArchiveAllowed:
+          type: boolean
+        latestCreateDateMarker:
+          type: string
+          format: date-time
+        timeZoneName:
+          type: string
+        status:
+          type: string
+        keyField:
+          type: string
+        description:
+          type: string
+    DataSourceAttribute:
+      type: object
+      properties:
+        originFieldName:
+          type: string
+        unit:
+          type: string
+        type:
+          type: string
+        fieldOrder:
+          type: integer
+        importAttr:
+          type: boolean
+        isMultiValued:
+          type: boolean
+        displayName:
+          type: string
+    DataSourceUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        accountLocked:
+          type: boolean
+        address1:
+          type: string
+        address2:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        deleted:
+          type: boolean
+        firstName:
+          type: string
+        fullName:
+          type: string
+        state:
+          type: string
+        lastLoginTime:
+          type: string
+          format: date-time
+        lastName:
+          type: string
+        notes:
+          type: string
+        passwordExpired:
+          type: boolean
+        phone1:
+          type: string
+        phone2:
+          type: string
+        role:
+          type: object
+          properties:
+            id:
+              type: integer
+            authority:
+              type: string
+            order:
+              type: integer
+        status:
+          type: string
+        tenantName:
+          type: string
+        username:
+          type: string
+        zip:
+          type: string
+        dismissAnnouncement:
+          type: boolean
+        dismissTenantWelcome:
+          type: boolean
+        dismissUserWelcome:
+          type: boolean
+        expiresOn:
+          type: string
+          format: date-time
+        accountExpired:
+          type: boolean
+        displayName:
+          type: string
+        organization:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        avatar:
+          type: string
+        apiEnabled:
+          type: boolean
+        initial:
+          type: string
+    
+  
+    DataSourceSummary:
+      type: array
+      items:
+        $ref: '#/components/schemas/DataSourcefordataSources'
+
+    DataSourcefordataSources:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the data source.
+        name:
+          type: string
+          description: The name of the data source.
+        description:
+          type: string
+          description: Description of the data source.
+        isDataStore:
+          type: boolean
+          description: Indicates if the data source is a data store.
+        isOpenDatasource:
+          type: boolean
+          description: Indicates if the data source is open.
+        scheduleStatus:
+          type: string
+          description: Status of the data source schedule.
+        isAdmin:
+          type: boolean
+          description: Indicates if the user is an admin of the data source.
+        allowManualUpdate:
+          type: boolean
+          description: Indicates if manual update is allowed for the data source.
+        daysToArchive:
+          type: integer
+          description: Number of days until data is archived.
+        isArchiveAllowed:
+          type: boolean
+          description: Indicates if archiving is allowed for the data source.
+        dataAssessment:
+          type: object
+          description: Information related to data assessment.
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the data source.
+        dataFormat:
+          type: string
+          description: Data format of the data source.
+    
+    
+    datapipelineresponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of data pipelines.
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: The ID of the data pipeline.
+              name:
+                type: string
+                description: The name of the data pipeline.
+              apiEnabled:
+                type: boolean
+                description: Indicates if the API is enabled for the data pipeline.
+              isAdmin:
+                type: boolean
+                description: Indicates if the user is an admin of the data pipeline.
+    
+  
+    DataTargetCreateRequest:
+      type: object
+      properties:
+        oauth:
+          $ref: '#/components/schemas/OAuthRef'
+        authMethod:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRef'
+        dataTargetAdmin:
+          $ref: '#/components/schemas/UserRef'
+        targetEntity:
+          type: string
+        primaryColumn:
+          type: string
+        nullableAttribs:
+          type: array
+          items:
+            type: string
+        allowedAttribs:
+          type: array
+          items:
+            type: string
+        exportSafteyValveValue:
+          type: integer
+        name:
+          type: string
+        deleteAllContent:
+          type: boolean
+        loadAllDataNextExport:
+          type: boolean
+        fieldValues:
+          type: array
+          items:
+            type: string
+        exportOptions:
+          type: string
+    DataTarget3:
+      type: object
+      properties:
+        id:
+          type: integer
+        exportSafteyValveValue:
+          type: integer
+        deleteAllContent:
+          type: boolean
+        dateCreated:
+          type: string
+          format: date-time
+        lastUpdated:
+          type: string
+          format: date-time
+        authMethod:
+          type: string
+        loadAllDataNextExport:
+          type: boolean
+        allowedAttribs:
+          type: string
+        targetProvider:
+          type: string
+        tenantName:
+          type: string
+        entityFields:
+          type: string
+        exportOptions:
+          type: string
+        securityKey:
+          type: string
+        encryptFiles:
+          type: string
+        primaryColumn:
+          type: string
+        exportInfo:
+          type: string
+        dataTargetAdmin:
+          $ref: '#/components/schemas/User3'
+        name:
+          type: string
+        oauth:
+          $ref: '#/components/schemas/OAuth3'
+        encryptedFieldValues:
+          type: string
+        targetEntity:
+          type: string
+        status:
+          type: string
+        nullableAttribs:
+          type: string
+        description:
+          type: string
+        fieldValues:
+          type: string
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/User3'
+        isAdmin:
+          type: boolean
+        activePipelines:
+          type: array
+          items:
+            type: object
+        tags:
+          type: array
+          items:
+            type: string
+        isMultipleActiveInput:
+          type: boolean
+    DataTargetCreateResponse:
+      allOf:
+        - $ref: '#/components/schemas/DataTarget3'
+        - type: object
+          properties:
+            dependencies:
+              type: object
+              properties:
+                rules:
+                  type: array
+                  items:
+                    type: object
+                pipelines:
+                  type: array
+                  items:
+                    type: object
+    OAuth3:
+      type: object
+      properties:
+        id:
+          type: integer
+        provider:
+          type: string
+        isValid:
+          type: boolean
+        isValidating:
+          type: boolean
+    OAuthRef:
+      type: object
+      properties:
+        id:
+          type: integer
+    User3:
+      type: object
+      properties:
+        id:
+          type: integer
+        enabled:
+          type: boolean
+        status:
+          type: string
+        organizationId:
+          type: integer
+        timeZone:
+          type: string
+        zip:
+          type: string
+        state:
+          type: string
+        deleted:
+          type: boolean
+        passwordExpired:
+          type: boolean
+        accountExpired:
+          type: boolean
+        lastName:
+          type: string
+        authorities:
+          type: array
+          items:
+            type: object
+        agreeForDataTransfer:
+          type: boolean
+        phone1:
+          type: string
+        skipSyncToOtherPods:
+          type: boolean
+        firstName:
+          type: string
+        accountLocked:
+          type: boolean
+        skipPasswordEncoding:
+          type: boolean
+        lastUpdated:
+          type: string
+          format: date-time
+        phone3:
+          type: string
+        dataAdmin:
+          type: boolean
+        organization:
+          type: object
+          properties:
+            id:
+              type: integer
+            tenantName:
+              type: string
+            accessControl:
+              type: string
+            name:
+              type: string
+            regConfirmText:
+              type: string
+            selfRegistration:
+              type: string
+            urlRoot:
+              type: string
+            status:
+              type: string
+            emailDomains:
+              type: string
+            description:
+              type: string
+            admin:
+              type: string
+        dateCreated:
+          type: string
+          format: date-time
+        skipSyncToOtherServices:
+          type: boolean
+        notes:
+          type: string
+        displayName:
+          type: string
+        country:
+          type: string
+        isApiOnlyUser:
+          type: boolean
+        dismissAnnouncement:
+          type: boolean
+        usernameForLogging:
+          type: string
+        impersonatedBy:
+          type: string
+        avatar:
+          type: string
+        role:
+          type: object
+          properties:
+            id:
+              type: integer
+            authority:
+              type: string
+              description: Authority of the user role.
+            displayName:
+              type: string
+              description: Display name of the user role.
+        lastLoginTime:
+          type: string
+          format: date-time
+        address1:
+          type: string
+        address3:
+          type: string
+        fullNameForLogging:
+          type: string
+        dismissUserWelcome:
+          type: boolean
+        username:
+          type: string
+        roleId:
+          type: integer
+        tenantName:
+          type: string
+        expiresOn:
+          type: string
+          format: date-time
+        fullName:
+          type: string
+        dismissTenantWelcome:
+          type: boolean
+        avatarId:
+          type: string
+        showOpenDataServices:
+          type: boolean
+        agreeForAutomatedProfiling:
+          type: boolean
+        observeDaylightSavings:
+          type: boolean
+        passwordUpdatedDate:
+          type: string
+          format: date-time
+        city:
+          type: string
+    UserRef:
+      type: object
+      properties:
+        id:
+          type: integer
+
+    
+    DataTargetAuthenticatedProviderResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        data:
+          type: array
+          items:
+            type: object
+            properties: {}
+
+    
+    DataTargetInput:
+      type: object
+      properties:
+        id:
+          type: integer
+        exportSafteyValveValue:
+          type: integer
+        deleteAllContent:
+          type: boolean
+        dateCreated:
+          type: string
+          format: date-time
+        lastUpdated:
+          type: string
+          format: date-time
+        authMethod:
+          type: string
+        loadAllDataNextExport:
+          type: boolean
+        allowedAttribs:
+          type: string
+        targetProvider:
+          type: string
+        tenantName:
+          type: string
+        entityFields:
+          type: string
+        exportOptions:
+          type: string
+        securityKey:
+          type: string
+        encryptFiles:
+          type: string
+        primaryColumn:
+          type: string
+        exportInfo:
+          type: string
+        dataTargetAdmin:
+          $ref: '#/components/schemas/DataTargetInputUser'
+        name:
+          type: string
+        oauth:
+          $ref: '#/components/schemas/DataTargetInputOAuthInfo'
+        encryptedFieldValues:
+          type: string
+        targetEntity:
+          type: string
+        status:
+          type: string
+        nullableAttribs:
+          type: string
+        description:
+          type: string
+        fieldValues:
+          type: string
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataTargetInputUser'
+        isAdmin:
+          type: boolean
+        activePipelines:
+          type: array
+          items:
+            type: string
+        tags:
+          type: array
+          items:
+            type: string
+        isMultipleActiveInput:
+          type: boolean
+    DataTargetResponse:
+      $ref: '#/components/schemas/DataTargetInput'
+    DataTargetInputUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        enabled:
+          type: boolean
+        status:
+          type: string
+        organizationId:
+          type: integer
+        lastLoginTime:
+          type: string
+          format: date-time
+        timeZone:
+          type: string
+        zip:
+          type: string
+        state:
+          type: string
+        deleted:
+          type: boolean
+        passwordExpired:
+          type: boolean
+        accountExpired:
+          type: boolean
+        lastName:
+          type: string
+        authorities:
+          type: array
+          items:
+            type: string
+        agreeForDataTransfer:
+          type: boolean
+        phone1:
+          type: string
+        skipSyncToOtherPods:
+          type: boolean
+        firstName:
+          type: string
+        accountLocked:
+          type: boolean
+        skipPasswordEncoding:
+          type: boolean
+        phone2:
+          type: string
+        dataAdmin:
+          type: boolean
+        dateCreated:
+          type: string
+          format: date-time
+        skipSyncToOtherServices:
+          type: boolean
+        notes:
+          type: string
+        displayName:
+          type: string
+        country:
+          type: string
+        isApiOnlyUser:
+          type: boolean
+        dismissAnnouncement:
+          type: boolean
+        usernameForLogging:
+          type: string
+        impersonatedBy:
+          type: string
+        avatar:
+          type: string
+        role:
+          $ref: '#/components/schemas/DataTargetInputUserRole'
+        address1:
+          type: string
+        address2:
+          type: string
+        organization:
+          $ref: '#/components/schemas/DataTargetInputUserOrganization'
+        fullNameForLogging:
+          type: string
+        dismissUserWelcome:
+          type: boolean
+        username:
+          type: string
+        roleId:
+          type: integer
+        expiresOn:
+          type: string
+          format: date-time
+        fullName:
+          type: string
+        dismissTenantWelcome:
+          type: boolean
+        avatarId:
+          type: string
+        showOpenDataServices:
+          type: boolean
+        agreeForAutomatedProfiling:
+          type: boolean
+        observeDaylightSavings:
+          type: boolean
+        passwordUpdatedDate:
+          type: string
+          format: date-time
+        lastUpdated:
+          type: string
+          format: date-time
+        city:
+          type: string
+    DataTargetInputOAuthInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        provider:
+          type: string
+        isValid:
+          type: boolean
+        isValidating:
+          type: boolean
+    DataTargetInputUserRole:
+      type: object
+      properties:
+        id:
+          type: integer
+        authority:
+          type: string
+        displayName:
+          type: string
+    DataTargetInputUserOrganization:
+      type: object
+      properties:
+        id:
+          type: integer
+        tenantName:
+          type: string
+        accessControl:
+          type: string
+        name:
+          type: string
+        regConfirmText:
+          type: string
+        selfRegistration:
+          type: string
+        urlRoot:
+          type: string
+        status:
+          type: string
+        emailDomains:
+          type: string
+        description:
+          type: string
+        admin:
+          type: string
+    
+    DataTargetDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the data target instance.
+        name:
+          type: string
+          description: The name of the data target.
+        description:
+          type: string
+          description: Additional description of the data target.
+        status:
+          type: string
+          description: The status of the data target (e.g., Active).
+        targetEntity:
+          type: string
+          description: The entity associated with the data target.
+        oauth:
+          $ref: '#/components/schemas/DataTargetDetailsOAuthDetails'
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDetails'
+      required:
+        - id
+        - name
+        - status
+        - targetEntity
+        - oauth
+        - admins
+    DataTargetDetailsOAuthDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the OAuth configuration associated with the data target.
+        provider:
+          type: string
+          description: The OAuth provider (e.g., gdrive).
+        isValid:
+          type: boolean
+          description: Indicates whether the OAuth configuration is valid.
+        isValidating:
+          type: boolean
+          description: Indicates whether the OAuth configuration is currently being validated.
+      required:
+        - id
+        - provider
+        - isValid
+        - isValidating
+    UserDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the user.
+        firstName:
+          type: string
+          description: The first name of the user.
+        lastName:
+          type: string
+          description: The last name of the user.
+        username:
+          type: string
+          description: The username of the user.
+        role:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: The ID of the user's role.
+            authority:
+              type: string
+              description: The authority of the user's role.
+          required:
+            - id
+            - authority
+      required:
+        - id
+        - firstName
+        - lastName
+        - username
+        - role
+
+    
+    SecurityKey:
+      type: string
+      description: A security key associated with the user's tenant and allowed entities.
+
+    
+    AuthenticatedProviderResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of authenticated providers.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthenticatedProvider'
+    AuthenticatedProvider:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the provider.
+        hasEditPermission:
+          type: boolean
+          description: Flag indicating whether the user has edit permission for the provider.
+        admins:
+          type: object
+          properties:
+            view:
+              type: array
+              items:
+                type: integer
+              description: List of user IDs with view permission for the provider.
+            edit:
+              type: array
+              items:
+                type: integer
+              description: List of user IDs with edit permission for the provider.
+        dateCreated:
+          type: string
+          format: date-time
+          description: Date and time when the provider was created.
+        expiration:
+          type: string
+          format: date-time
+          description: Expiration date and time for the provider.
+        provider:
+          type: string
+          description: Type of the provider (e.g., gdrive, gdrivesheets).
+        isOpenAuth:
+          type: boolean
+          description: Flag indicating whether the provider uses open authentication.
+        tenantName:
+          type: string
+          description: Name of the tenant associated with the provider.
+        type:
+          type: string
+          description: Type of the provider (e.g., storage).
+        user:
+          $ref: '#/components/schemas/User1'
+        isValid:
+          type: boolean
+          description: Flag indicating whether the provider is valid.
+        userIdentData:
+          type: string
+          description: JSON string containing user identification data.
+        authUrl:
+          type: string
+          description: URL for authentication with the provider.
+    User1:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the user.
+
+    
+    UserResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of users.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the user.
+        firstName:
+          type: string
+          description: First name of the user.
+        lastName:
+          type: string
+          description: Last name of the user.
+        fullName:
+          type: string
+          description: Full name of the user.
+        username:
+          type: string
+          description: Username of the user.
+        role:
+          $ref: '#/components/schemas/Role'
+        status:
+          type: string
+          description: Status of the user (e.g., Active, Locked).
+        organization:
+          $ref: '#/components/schemas/Organization'
+        lastLoginTime:
+          type: string
+          format: date-time
+          description: Last login time of the user.
+   
+    Organization:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the organization.
+        name:
+          type: string
+          description: Name of the organization.
+
+    
+    
+    OAuthClientProviderList:
+      type: array
+      items:
+        $ref: '#/components/schemas/OAuthClientProvider'
+    
+    
+    OAuthClientProvider:
+      type: object
+      properties:
+        provider:
+          type: string
+        providerType:
+          type: string
+        providerCategory:
+          type: string
+        providerCategoryLabel:
+          type: string
+        authUrl:
+          type: string
+        authData:
+          $ref: '#/components/schemas/AuthData'
+        importInputInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/InputInfo'
+        exportInputInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/InputInfo'
+        id:
+          type: string
+        name:
+          type: string
+        label:
+          type: string
+        iconPath:
+          type: string
+        fileSeparator:
+          type: string
+        warningMessage:
+          type: string
+        onSelectWarnMessage:
+          type: string
+        sourceSchemaChangeAlert:
+          type: string
+        providerQuotaInfo:
+          $ref: '#/components/schemas/ProviderQuotaInfo'
+        isAllUpdateableAreNullable:
+          type: boolean
+    
+    
+    AuthData:
+      type: object
+      properties:
+        type:
+          type: string
+        name:
+          type: string
+        input:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthInput'
+    AuthInput:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthInputValue'
+    AuthInputValue:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        selected:
+          type: boolean
+    
+    InputInfo:
+      type: object
+      properties:
+        entity:
+          type: string
+        input:
+          type: array
+          items:
+            $ref: '#/components/schemas/InputField'
+    InputField:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/InputFieldValue'
+        required:
+          type: boolean
+        value:
+          type: string
+    
+    InputFieldValue:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        selected:
+          type: boolean
+    ProviderQuotaInfo:
+      type: object
+      properties:
+        frequencyUnit:
+          type: string
+        frequencyValue:
+          type: string
+    
+    
+    
+    DataTargetsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: The total number of data targets matching the criteria.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataTarget'
+
+    DataTarget:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the data target.
+        name:
+          type: string
+          description: The name of the data target.
+        tenantName:
+          type: string
+          description: The name of the tenant associated with the data target.
+        status:
+          type: string
+          description: The status of the data target.
+        isAdmin:
+          type: boolean
+          description: Indicates if the user is an admin for the data target.
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        oauth:
+          $ref: '#/components/schemas/OAuthDetails'
+        encryptedFieldValues:
+          type: string
+          description: Encrypted field values associated with the data target.
+    
+
+  
+    OAuthDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the OAuth provider.
+        provider:
+          type: string
+          description: The OAuth provider.
+        isValid:
+          type: boolean
+          description: Indicates if the OAuth provider is valid.
+        isValidating:
+          type: boolean
+          description: Indicates if the OAuth provider is currently validating.
+        authUrl:
+          type: string
+          description: The authentication URL for the OAuth provider.
+        type:
+          type: string
+          description: The type of OAuth provider (e.g., Cloud Storage).
+        fileSeparator:
+          type: string
+          description: The file separator used by the OAuth provider.
+    
+    
+    
+    UserDetailsResponse:
+      type: object
+      properties:
+        accountLocked:
+          type: boolean
+          description: Indicates if the user account is locked.
+        address1:
+          type: string
+          description: The first line of the user's address.
+        address2:
+          type: string
+          description: The second line of the user's address.
+        city:
+          type: string
+          description: The city where the user resides.
+        country:
+          type: string
+          description: The country where the user resides.
+        deleted:
+          type: boolean
+          description: Indicates if the user account has been deleted.
+        firstName:
+          type: string
+          description: The first name of the user.
+        fullName:
+          type: string
+          description: The full name of the user.
+        state:
+          type: string
+          description: The state where the user resides.
+        id:
+          type: integer
+          description: The unique identifier of the user.
+        lastLoginTime:
+          type: string
+          format: date-time
+          description: The date and time when the user last logged in.
+        lastName:
+          type: string
+          description: The last name of the user.
+        notes:
+          type: string
+          description: Any notes associated with the user.
+        passwordExpired:
+          type: boolean
+          description: Indicates if the user's password has expired.
+        phone1:
+          type: string
+          description: The primary phone number of the user.
+        phone2:
+          type: string
+          description: The secondary phone number of the user.
+        role:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: The unique identifier of the user's role.
+            authority:
+              type: string
+              description: The authority of the user's role.
+            order:
+              type: integer
+              description: The order of the user's role.
+          description: The role of the user.
+        status:
+          type: string
+          description: The status of the user account.
+        tenantName:
+          type: string
+          description: The name of the tenant associated with the user.
+        username:
+          type: string
+          description: The username of the user.
+        zip:
+          type: string
+          description: The ZIP code of the user's address.
+        dismissAnnouncement:
+          type: boolean
+          description: Indicates if the user has dismissed announcements.
+        dismissTenantWelcome:
+          type: boolean
+          description: Indicates if the user has dismissed tenant welcome messages.
+        dismissUserWelcome:
+          type: boolean
+          description: Indicates if the user has dismissed user welcome messages.
+        expiresOn:
+          type: string
+          format: date-time
+          description: The date and time when the user account expires.
+        accountExpired:
+          type: boolean
+          description: Indicates if the user account has expired.
+        displayName:
+          type: string
+          description: The display name of the user.
+        organization:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: The unique identifier of the organization associated with the user.
+            name:
+              type: string
+              description: The name of the organization associated with the user.
+          description: The organization associated with the user.
+        avatar:
+          type: string
+          description: The avatar (profile picture) URL of the user.
+        apiEnabled:
+          type: boolean
+          description: Indicates if API access is enabled for the user.
+
+    
+    UserPreferencesResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: The total number of preferences matching the criteria.
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              preferenceName:
+                type: string
+                description: The name of the preference.
+              preferenceValue:
+                type: string
+                description: The value of the preference.
+    
+    
+    WhiteLabelDetails:
+      type: object
+      properties:
+        isWhiteLabelEnabled:
+          type: boolean
+          description: Indicates whether white label is enabled for the current tenant.
+    
+    PreferencesResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: The total number of preferences matching the criteria.
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              preferenceName:
+                type: string
+                description: The name of the preference.
+              preferenceValue:
+                type: string
+                description: The value of the preference.
+    
+    
+    AppFactoryUrlResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the request was successful.
+        url:
+          type: string
+          format: uri
+          description: The URL for the app factory.
+    
+    HelpLinksResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of help links retrieved.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/HelpLink'
+    HelpLink:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the help link.
+        title:
+          type: string
+          description: The title of the help link.
+        url:
+          type: string
+          format: uri
+          description: The URL of the help link.
+        description:
+          type: string
+          description: A brief description of the help link.
+    Error:
+      type: object
+      properties:
+        errors:
+          type: string
+          description: Error message.
+
+    
+    TenantFeaturesResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the tenant.
+        logo:
+          type: string
+          nullable: true
+          description: URL of the tenant's logo.
+        boolAlerts:
+          type: boolean
+          description: Indicates if alerts feature is enabled for the tenant.
+        boolRules:
+          type: boolean
+          description: Indicates if rules feature is enabled for the tenant.
+        boolEventSearch:
+          type: boolean
+          description: Indicates if event search feature is enabled for the tenant.
+        boolDownload:
+          type: boolean
+          description: Indicates if download feature is enabled for the tenant.
+        boolCatalog:
+          type: boolean
+          description: Indicates if catalog feature is enabled for the tenant.
+        boolOpenData:
+          type: boolean
+          description: Indicates if open data feature is enabled for the tenant.
+        boolPremiumData:
+          type: boolean
+          description: Indicates if premium data feature is enabled for the tenant.
+        boolAnalytics:
+          type: boolean
+          description: Indicates if analytics feature is enabled for the tenant.
+        boolDataSources:
+          type: boolean
+          description: Indicates if data sources feature is enabled for the tenant.
+        boolDataServices:
+          type: boolean
+          description: Indicates if data services feature is enabled for the tenant.
+        boolDataTargets:
+          type: boolean
+          description: Indicates if data targets feature is enabled for the tenant.
+        boolPipelines:
+          type: boolean
+          description: Indicates if pipelines feature is enabled for the tenant.
+        boolRecipes:
+          type: boolean
+          description: Indicates if recipes feature is enabled for the tenant.
+        boolArchives:
+          type: boolean
+          description: Indicates if archives feature is enabled for the tenant.
+        boolWorkflow:
+          type: boolean
+          description: Indicates if workflow feature is enabled for the tenant.
+        boolGdpr:
+          type: boolean
+          description: Indicates if GDPR feature is enabled for the tenant.
+        boolUserPreferences:
+          type: boolean
+          description: Indicates if user preferences feature is enabled for the tenant.
+        boolAPIFactory:
+          type: boolean
+          description: Indicates if API factory feature is enabled for the tenant.
+        boolAPPFactory:
+          type: boolean
+          description: Indicates if app factory feature is enabled for the tenant.
+        boolProjects:
+          type: boolean
+          description: Indicates if projects feature is enabled for the tenant.
+        boolAskAi:
+          type: boolean
+          description: Indicates if Ask AI feature is enabled for the tenant.
+    
+    
+    TenantCreateRequest:
+      type: object
+      properties:
+        tenantName:
+          type: string
+          description: name of new tenant
+        companyName:
+          type: string
+          description: display name of company 
+        companyUrl:
+          type: string
+          description: company url
+        firstName:
+          type: string
+          description: First name of the user.
+        lastName:
+          type: string
+          description: Last name of the user.
+        username:
+          type: string
+          description: user email of the user.
+        subscriptionPlan:
+          type: string
+          description: subscriptionPlan of the company.
+        agreeForDataTransfer:
+          type: string
+        agreeForAutomatedProfiling:
+          type: string
+
+    UserCreateRequest:
+      type: object
+      properties:
+        passwordExpired:
+          type: boolean
+          description: Indicates if the user's password has expired.
+        role:
+          type: integer
+          description: ID of the user's role.
+        status:
+          type: string
+          description: Status of the user (e.g., Active).
+        firstName:
+          type: string
+          description: First name of the user.
+        lastName:
+          type: string
+          description: Last name of the user.
+        organization:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: ID of the organization the user belongs to.
+        username:
+          type: string
+          description: Username of the user.
+        temporaryPassword:
+          type: string
+          description: Temporary password for the user.
+        expiresOn:
+          type: string
+          format: date-time
+          description: Expiration date for the user's account.
+        password:
+          type: string
+          description: User's password.
+
+    
+    
+    RoleDataResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of roles.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the role.
+        authority:
+          type: string
+          description: Authority level of the role.
+        order:
+          type: integer
+          description: Order of the role.
+
+    
+    
+    OrganizationDataResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of organizations.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Organization'
+            
+    
+    UserDataResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of users.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+ 
+  
+    ConfigurationsResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of configurations.
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Configuration'
+    Configuration:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the configuration.
+        tenantName:
+          type: string
+          description: Name of the associated tenant.
+        encryptedValue:
+          type: string
+          description: Encrypted value of the configuration.
+        name:
+          type: string
+          description: Name of the configuration.
+        type:
+          type: string
+          description: Type of the configuration.
+        isCacheEnabled:
+          type: boolean
+          description: Indicates if caching is enabled.
+        value:
+          type: string
+          description: Value of the configuration.
+
+    
+    NewAdminResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        enabled:
+          type: boolean
+        status:
+          type: string
+        organizationId:
+          type: integer
+        timeZone: 
+          type: integer
+        zip:
+          type: integer
+        state:
+          type: string
+        deleted:
+          type: boolean
+        passwordExpired:
+          type: boolean
+        accountExpired:
+          type: boolean
+        lastName:
+          type: string
+        authorities:
+          type: array
+          items: {}
+        agreeForDataTransfer:
+          type: boolean
+        lastLoginTime:
+          type: string
+          format: date-time
+        phone1:
+          type: string
+        skipSyncToOthersPods:
+          type: boolean
+        firstName: 
+          type: string
+        accountLocked:
+          type: boolean
+        skipPasswordEncoding:
+          type: boolean
+        phone2:
+          type: string
+        dataAdmin:
+          type: boolean
+        dateCreated:
+          type: string
+          format: date-time
+        skipSyncToOtherServices:
+          type: boolean
+        notes:  
+          type: string
+        displayName:
+          type: string
+        usernameForLogging:
+          type: string
+        organization:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewOrganizationResponse'
+        lastUpdated:
+          type: string
+          format: date-time
+        impersonatedBy:
+          type: string
+        avatar:
+          type: string
+        role:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewRoleResponse'
+        address1:
+          type: string
+        address2:
+          type: string
+        fullNameForLogging:
+          type: string
+        dismissUserWelcome:
+          type: boolean
+        username:
+          type: string
+        roleId:
+          type: integer
+        tenantName:
+          type: string
+        expiresOn:
+          type: string
+          format: date-time
+        fullName:
+          type: string
+        dismissTenantWelcome:
+          type: boolean
+        avatarId: 
+          type: integer
+        showOpenDataServices:
+          type: boolean
+        agreeForAutomatedProfiling:
+          type: boolean
+        observeDaylightSavings:
+          type: boolean
+        passwordUpdatedDate:
+          type: boolean
+        city:
+          type: string
+    
+    
+    
+    
+    
+    NewRoleResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        authority:
+          type: string
+        displayName:
+          type: string
+    
+    NewOrganizationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        tenantName:
+          type: string
+        accessControl: 
+          type: string
+        name:
+          type: string
+        regConfirmText:
+          type: string
+        selfRegistration:
+          type: string
+        urlRoot:  
+          type: string
+        status:
+          type: string
+        emailDomains:
+          type: string
+        description:
+          type: string
+        admin:
+          type: string
+    
+    
+    NewSaveResponse:
+      type: object
+      properties:
+        apiEnabled:
+          type: boolean
+        dateCreated:
+          type: string
+          format: date-time
+        description:
+          type: string
+        frequencyType:
+          type: integer
+        frequencyUnit:
+          type: string
+        id:
+          type: integer
+        isStuck:
+          type: boolean
+        lastUpdated:
+          type: boolean
+        usedInAppFactory:
+          type: boolean
+        name:
+          type: string
+        nextRunOnFailure:
+          type: string
+        notificationJSON:
+          type: string
+        runningStatus:
+          type: string
+        scheduleJobName:
+          type: string
+        startAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+        tenantName: 
+          type: string
+        visibility:
+          type: string
+        misfireInstruction:
+          type: string
+        frequencySettings:
+          type: array
+          items: {}
+        
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewAdminResponse'
+        entities:
+          type: array
+          items: {}
+        isAdmin:
+          type: boolean
+        tags:
+          type: array
+          items: {}
+      
+          
+        
+        
+    NewSaveProcess:
+      type: object
+      properties:
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/NewAdmin'
+        startAt:
+          type: string
+          format: date-time
+        misfireInstruction: 
+          type: string
+        nextRunOnFailure:
+          type: string
+        notificationJSON:
+          type: string
+        frequency:
+          type: integer
+        frequencyUnit:
+          type: string
+        apiEnabled:
+          type: boolean
+        frequencySettings:
+          type: string
+        name: 
+          type: string
+          
+    Roleforcreating:
+      type: object
+      properties:
+        id: 
+          type: integer
+        authority:
+          type: string
+        order:
+          type: integer
+    
+    Organizationforcreating:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    NewAdmin:
+      type: object
+      properties:
+        accountLocked: 
+          type: boolean
+        address1:
+          type: string
+        address2:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        deleted:
+          type: boolean
+        firstName: 
+          type: string
+        fullName:
+          type: string
+        state:
+          type: string
+        id:
+          type: integer
+        lastLoginTime:
+          type: string
+          format: date-time
+        lastName:
+          type: string
+        notes:
+          type: array
+          items:
+            type: string
+        passwordExpired:
+          type: boolean
+        phone1:
+          type: string
+        phone2:
+          type: string
+        role:
+          type: array
+          items:
+            $ref: '#/components/schemas/Roleforcreating'
+        
+        status:
+          type: string
+        tenantName:
+          type: string
+        username:
+          type: string
+        zip:
+          type: integer
+        dismissAnnouncement:
+          type: boolean
+        dismissTenantWelcome:
+          type: boolean
+        dismissUserWelcome:
+          type: boolean
+        expiresOn:
+          type: string
+          format: date-time
+        accountExpired:
+          type: boolean
+        displayName:
+          type: string
+        organization:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Organizationforcreating'
+        avatar: 
+          type: string
+        initial:
+          type: string
+        
+    
+          
+    UpdateProcessRequest:
+      type: object
+      properties:
+        apiEnabled:
+          type: boolean
+        dateCreated:
+          type: string
+          format: date-time
+        description:
+          type: string
+        frequency:
+          type: integer
+        frequencyType:
+          type: string
+        frequencyUnit:
+          type: string
+        isStuck:
+          type: boolean
+        lastUpdated:
+          type: string
+          format: date-time
+        usedInAppFactory:
+          type: boolean
+        name:
+          type: string
+        nextRunOnFailure:
+          type: string
+        notificationJSON:
+          type: string
+        scheduleJobName:
+          type: string
+        startAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+        tenantName:
+          type: string
+        visibility:
+          type: string
+        misfireInstruction:
+          type: string
+        frequencySettings:
+          type: string
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/Admin'
+        isAdmin:
+          type: boolean
+        runDetails:
+          type: object
+          properties:
+            last_run_at:
+              type: string
+              format: date-time
+            last_run_status:
+              type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+    ProcessDetails:
+      type: object
+      properties:
+        apiEnabled:
+          type: boolean
+        dateCreated:
+          type: string
+          format: date-time
+        description:
+          type: string
+        frequency:
+          type: string
+        frequencyType:
+          type: string
+        frequencyUnit:
+          type: string
+        id:
+          type: integer
+        isStuck:
+          type: boolean
+        lastUpdated:
+          type: string
+          format: date-time
+        usedInAppFactory:
+          type: boolean
+        name:
+          type: string
+        nextRunOnFailure:
+          type: string
+        notificationJSON:
+          type: string
+        runningStatus:
+          type: string
+        scheduleJobName:
+          type: string
+        startAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+        tenantName:
+          type: string
+        visibility:
+          type: string
+        misfireInstruction:
+          type: string
+        frequencySettings:
+          type: string
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/Admin'
+        isAdmin:
+          type: boolean
+        runDetails:
+          type: object
+          properties:
+            last_run_at:
+              type: string
+              format: date-time
+            last_run_status:
+              type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+    Admin:
+      type: object
+      properties:
+        id:
+          type: integer
+        enabled:
+          type: boolean
+        status:
+          type: string
+        organizationId:
+          type: integer
+        timeZone:
+          type: string
+        zip:
+          type: string
+        state:
+          type: string
+        deleted:
+          type: boolean
+        passwordExpired:
+          type: boolean
+        accountExpired:
+          type: boolean
+        lastName:
+          type: string
+        authorities:
+          type: array
+          items:
+            type: string
+        agreeForDataTransfer:
+          type: boolean
+        phone1:
+          type: string
+        lastLoginTime:
+          type: string
+          format: date-time
+        skipSyncToOtherPods:
+          type: boolean
+        firstName:
+          type: string
+        accountLocked:
+          type: boolean
+        skipPasswordEncoding:
+          type: boolean
+        phone2:
+          type: string
+        dataAdmin:
+          type: boolean
+        dateCreated:
+          type: string
+          format: date-time
+        skipSyncToOtherServices:
+          type: boolean
+        notes:
+          type: string
+        displayName:
+          type: string
+        country:
+          type: string
+        isApiOnlyUser:
+          type: boolean
+        dismissAnnouncement:
+          type: boolean
+        usernameForLogging:
+          type: string
+        organization:
+          $ref: '#/components/schemas/Organization'
+        impersonatedBy:
+          type: string
+        avatar:
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+        address1:
+          type: string
+        address2:
+          type: string
+        fullNameForLogging:
+          type: string
+        dismissUserWelcome:
+          type: boolean
+        username:
+          type: string
+        roleId:
+          type: integer
+        expiresOn:
+          type: string
+          format: date-time
+        fullName:
+          type: string
+        dismissTenantWelcome:
+          type: boolean
+        avatarId:
+          type: string
+        showOpenDataServices:
+          type: boolean
+        agreeForAutomatedProfiling:
+          type: boolean
+        observeDaylightSavings:
+          type: boolean
+        passwordUpdatedDate:
+          type: string
+          format: date-time
+        city:
+          type: string
+
+
+    Process:
+      type: object
+      properties:
+        apiEnabled:
+          type: boolean
+        dateCreated:
+          type: string
+          format: date-time
+        description:
+          type: string
+        frequency:
+          type: string
+        frequencyType:
+          type: string
+        frequencyUnit:
+          type: string
+        id:
+          type: integer
+        isStuck:
+          type: boolean
+        lastUpdated:
+          type: string
+          format: date-time
+        usedInAppFactory:
+          type: boolean
+        name:
+          type: string
+        nextRunOnFailure:
+          type: string
+        notificationJSON:
+          type: string
+        runningStatus:
+          type: object
+        scheduleJobName:
+          type: string
+        startAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+        tenantName:
+          type: string
+        visibility:
+          type: string
+        misfireInstruction:
+          type: string
+        frequencySettings:
+          type: string
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/Admin'
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entity'
+        isAdmin:
+          type: boolean
+        runDetails:
+          type: object
+          properties:
+            last_run_at:
+              type: string
+              format: date-time
+            last_run_status:
+              type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+    Entity:
+      type: object
+      properties:
+        action:
+          type: string
+        actionDetails:
+          type: string
+        entityId:
+          type: integer
+        entityOrder:
+          type: integer
+        entityType:
+          type: string
+        id:
+          type: integer
+        noOfRetries:
+          type: integer
+        retryAfterMinutes:
+          type: integer
+        retryCounter:
+          type: integer
+        retryOnStatus:
+          type: string
+        runningStatus:
+          type: object
+        tenantName:
+          type: string
+        entityName:
+          type: string
+   
+    
+    
+    ProcessResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Process'
+
+    TagResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        data:
+          type: array
+          items:
+            type: string
+
+    
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+  
+
+    UsageResults:
+      type: object
+      properties:
+        message:
+          type: string
+
+  
+  
+  
+    UserPreferenceResponse:
+        type: object
+        properties:
+          total:
+            type: integer
+          data:
+            type: array
+            items: {}
+
+  
+    Bots:
+      type: object
+      properties:
+        id:
+          type: integer
+        tenantName:
+          type: string
+        dateCreated:
+          type: string
+          format: date-time
+        retryAfterMinutes:
+          type: integer
+        lastUpdated:
+          type: string
+          format: date-time
+        noOfRetries:
+          type: integer
+        retryCounter:
+          type: integer
+        action:
+          type: string
+        entityOrder:
+          type: integer
+        retryOnStatus:
+          type: string
+        entityType:
+          type: string
+        runningStatus:
+          type: string
+        actionDetails:
+          type: string
+        entityId:
+          type: integer
+    BOTProcess:
+      type: object
+      properties:
+        apiEnabled:
+          type: boolean
+        dateCreated:
+          type: string
+          format: date-time
+        description:
+          type: string
+        frequency:
+          type: integer
+        frequencyType:
+          type: string
+        frequencyUnit:
+          type: string
+        id:
+          type: integer
+        isStuck:
+          type: boolean
+        lastUpdated:
+          type: string
+          format: date-time
+        usedInAppFactory:
+          type: boolean
+        name:
+          type: string
+        nextRunOnFailure:
+          type: string
+        notificationJSON:
+          type: string
+        runningStatus:
+          type: string
+        scheduleJobName:
+          type: string
+        startAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+        tenantName:
+          type: string
+        visibility:
+          type: string
+        misfireInstruction:
+          type: string
+        frequencySettings:
+          type: string
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/Admin'
+        isAdmin:
+          type: boolean
+        runDetails:
+          type: object
+        tags:
+          type: array
+          items:
+            type: string
+
+    ProcessEntity:
+      type: object
+      properties:
+        id:
+          type: integer
+        tenantName:
+          type: string
+        dateCreated:
+          type: string
+          format: date-time
+        retryAfterMinutes:
+          type: integer
+        lastUpdated:
+          type: string
+          format: date-time
+        noOfRetries:
+          type: integer
+        retryCounter:
+          type: integer
+        action:
+          type: string
+        entityOrder:
+          type: integer
+        retryOnStatus:
+          type: string
+        entityType:
+          type: string
+        runningStatus:
+          type: string
+        actionDetails:
+          type: string
+        entityId:
+          type: integer
+
+    
+    DataSourceAdmin:
+      type: object
+      properties:
+        id:
+          type: integer
+        enabled:
+          type: boolean
+        lastLoginTime:
+          type: string
+          format: date-time
+        passwordUpdatedDate:
+          type: string
+          format: date-time
+        organizationId:
+          type: integer
+        timeZone:
+          type: string
+        displayName:
+          type: string
+        zip:
+          type: string
+        fullName:
+          type: string
+        firstName:
+          type: string
+        state:
+          type: string
+        deleted:
+          type: boolean
+        passwordExpired:
+          type: boolean
+        accountExpired:
+          type: boolean
+        lastName:
+          type: string
+        authorities:
+          type: array
+          items:
+            type: string
+        agreeForDataTransfer:
+          type: boolean
+        role:
+          $ref: '#/components/schemas/Role'
+        phone1:
+          type: string
+        impersonatedBy:
+          type: string
+        skipSyncToOtherPods:
+          type: boolean
+        accountLocked:
+          type: boolean
+        skipPasswordEncoding:
+          type: boolean
+        phone2:
+          type: string
+        dataAdmin:
+          type: boolean
+        usernameForLogging:
+          type: string
+        username:
+          type: string
+        skipSyncToOtherServices:
+          type: boolean
+        notes:
+          type: string
+        country:
+          type: string
+        isApiOnlyUser:
+          type: boolean
+        dismissAnnouncement:
+          type: boolean
+        dateCreated:
+          type: string
+          format: date-time
+        organization:
+          $ref: '#/components/schemas/Organization'
+        avatar:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        dismissUserWelcome:
+          type: boolean
+        roleId:
+          type: integer
+        fullNameForLogging:
+          type: string
+        tenantName:
+          type: string
+        expiresOn:
+          type: string
+          format: date-time
+        dismissTenantWelcome:
+          type: boolean
+        avatarId:
+          type: integer
+        showOpenDataServices:
+          type: boolean
+        status:
+          type: string
+        agreeForAutomatedProfiling:
+          type: boolean
+        observeDaylightSavings:
+          type: boolean
+          format: date-time
+        city:
+          type: string
+  
+
+    DataSourcesResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataSource'
+    DataSource:
+      type: object
+      properties:
+        tenantName:
+          type: string
+        allowManualUpdate:
+          type: boolean
+        dpPath:
+          type: string
+        dataFormat:
+          type: string
+        dataSourceAdmin:
+          $ref: '#/components/schemas/DataSourceAdmin'
+        name:
+          type: string
+        dataProvider:
+          type: string
+        id:
+          type: integer
+        authMethod:
+          type: string
+        status:
+          type: string
+        dataAssessment:
+          type: string
+        isAdmin:
+          type: boolean
+        scheduleStatus:
+          type: string
+    
+    NewProcessRequest:
+      type: object
+      properties:
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/Admin'
+        startAt:
+          type: string
+          format: date-time
+        misfireInstruction:
+          type: string
+        nextRunOnFailure:
+          type: string
+        notificationJSON:
+          type: string
+        frequency:
+          type: integer
+        frequencyUnit:
+          type: string
+        frequencyType:
+          type: string
+        name:
+          type: string
+
+
+    ProcessEntityRequest:
+      type: object
+      properties:
+        entityOrder:
+          type: integer
+        entityType:
+          type: string
+        entityId:
+          type: integer
+        action:
+          type: string
+        noOfRetries:
+          type: integer
+        retryAfterMinutes:
+          type: integer
+        retryOnStatus:
+          type: string
+    
+    ProcessEntityResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        tenantName:
+          type: string
+        dateCreated:
+          type: string
+          format: date-time
+        retryAfterMinutes:
+          type: integer
+        lastUpdated:
+          type: string
+          format: date-time
+        noOfRetries:
+          type: integer
+        retryCounter:
+          type: integer
+        action:
+          type: string
+        entityOrder:
+          type: integer
+        retryOnStatus:
+          type: string
+        entityType:
+          type: string
+        runningStatus:
+          type: string
+        actionDetails:
+          type: string
+        entityId:
+          type: integer
